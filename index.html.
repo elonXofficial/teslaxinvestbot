@@ -3,389 +3,372 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>𝕏-Invest Premium Advisory Matrix</title>
-    <!-- Telegram Web App SDK & Supabase Client -->
+    <title>FxPro | Institutional Smart Portal</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- Built-in QR Code Generator -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         :root {
-            /* Fallbacks hooked directly into Telegram Native Theme Variables */
-            --bg-dark: var(--tg-theme-bg-color, #000000);
-            --panel-bg: var(--tg-theme-secondary-bg-color, #09090b);
-            --card-bg: #121217;
-            --accent-green: #00ff66;
-            --accent-blue: #007aff;
-            --text-main: var(--tg-theme-text-color, #ffffff);
-            --text-gray: var(--tg-theme-hint-color, #a1a1aa);
-            --border-color: rgba(255, 255, 255, 0.08);
-            --glow-green: 0 0 20px rgba(0, 255, 102, 0.2);
+            --fx-bg: #0a0c10;
+            --fx-panel: #11141c;
+            --fx-card: #161a24;
+            --fx-accent: #00b0ff;
+            --fx-green: #00e676;
+            --fx-red: #ff3d00;
+            --fx-text: #ffffff;
+            --fx-muted: #8a94a6;
+            --fx-border: rgba(255, 255, 255, 0.06);
+            --glow-effect: 0px 0px 15px rgba(0, 176, 255, 0.25);
         }
 
-        /* Strict Reset & iOS Webview Layout Sanitization */
         * { 
             box-sizing: border-box; 
             margin: 0; 
             padding: 0; 
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             -webkit-font-smoothing: antialiased;
             -webkit-tap-highlight-color: transparent;
         }
         
         body { 
-            background-color: var(--bg-dark); 
-            color: var(--text-main); 
+            background-color: var(--fx-bg); 
+            color: var(--fx-text); 
             min-height: 100vh; 
             overflow-x: hidden; 
-            padding-top: 75px;
+            padding-top: 70px;
             display: flex;
             flex-direction: column;
             align-items: center;
         }
-        body.nav-locked {
-            overflow: hidden;
-        }
+        body.nav-locked { overflow: hidden; }
         
-        /* Layout Header Structure */
+        /* Premium Core Navigation Bar Header */
         header { 
-            background: var(--panel-bg); 
-            padding: 0 20px; 
-            border-bottom: 1px solid var(--border-color); 
+            background: var(--fx-panel); 
+            padding: 0 16px; 
+            border-bottom: 1px solid var(--fx-border); 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
             position: fixed; 
-            top: 0; 
-            left: 0;
-            right: 0;
+            top: 0; left: 0; right: 0;
             height: 65px;
             z-index: 1000; 
         }
-        .brand-title { font-weight: 900; letter-spacing: 1px; font-size: 13px; color: #fff; text-transform: uppercase; }
-        .balance-box { 
-            background: rgba(255, 255, 255, 0.03); 
-            border: 1px solid var(--border-color); 
-            padding: 6px 14px; 
-            border-radius: 8px; 
+        .brand-logo-area { display: flex; align-items: center; gap: 8px; }
+        .brand-logo-area span { font-weight: 800; font-size: 18px; letter-spacing: -0.5px; color: #fff; }
+        .brand-logo-area span orange { color: var(--fx-accent); }
+        .user-badge { font-size: 10px; color: var(--fx-muted); font-family: monospace; border: 1px solid var(--fx-border); padding: 2px 6px; border-radius: 4px; margin-top: 2px; text-transform: uppercase; }
+        
+        .header-wallet-card { 
+            background: rgba(255, 255, 255, 0.02); 
+            border: 1px solid var(--fx-border); 
+            padding: 6px 12px; 
+            border-radius: 6px; 
             text-align: right;
         }
-        .balance-label { font-size: 9px; color: var(--text-gray); text-transform: uppercase; display: block; margin-bottom: 2px; }
-        .balance-amount { font-size: 15px; font-weight: bold; color: var(--accent-green); }
+        .wallet-label { font-size: 8px; color: var(--fx-muted); text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px; }
+        .wallet-cash { font-size: 14px; font-weight: 700; color: var(--fx-green); font-family: monospace; }
 
-        /* Hamburger Drawer Menu Button */
-        .menu-toggle {
+        /* FxPro Side App Drawer Toggle UI */
+        .drawer-trigger {
             position: fixed;
-            top: 80px;
-            left: 15px;
-            background: #121217;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
+            top: 80px; left: 15px;
+            background: var(--fx-panel);
+            border: 1px solid var(--fx-border);
+            border-radius: 6px;
             padding: 12px;
             cursor: pointer;
             z-index: 1100;
             display: flex;
             flex-direction: column;
-            gap: 5px;
-            width: 44px;
-            height: 44px;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            gap: 4px;
+            width: 40px; height: 40px;
+            justify-content: center; align-items: center;
         }
-        .menu-toggle .bar { width: 20px; height: 2px; background-color: #fff; transition: 0.3s; }
+        .drawer-trigger .line { width: 18px; height: 2px; background-color: #fff; transition: 0.2s; }
 
-        /* Side Navigation Overlay Panel */
-        .side-nav {
+        .side-drawer {
             position: fixed;
-            top: 0;
-            left: -100%;
-            width: 280px;
-            height: 100%;
-            background: #09090b;
-            border-right: 1px solid var(--border-color);
-            box-shadow: 20px 0 40px rgba(0,0,0,0.9);
-            transition: left 0.3s ease-in-out;
+            top: 0; left: -100%;
+            width: 260px; height: 100%;
+            background: var(--fx-panel);
+            border-right: 1px solid var(--fx-border);
+            transition: left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 1050;
-            padding: 140px 20px 20px 20px;
+            padding: 135px 16px 20px 16px;
         }
-        .side-nav.open { left: 0; }
-        .nav-links { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+        .side-drawer.open { left: 0; }
+        .drawer-nav-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
         
-        .nav-item { 
-            display: flex; 
-            align-items: center; 
-            gap: 12px; 
-            color: var(--text-gray) !important; 
-            text-decoration: none !important; 
-            font-size: 14px; 
-            font-weight: 600;
-            padding: 14px; 
-            border-radius: 8px; 
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--border-color);
-            transition: all 0.2s ease;
+        .drawer-link { 
+            display: flex; align-items: center; gap: 10px; 
+            color: var(--fx-muted) !important; text-decoration: none !important; 
+            font-size: 13px; font-weight: 600; padding: 12px; border-radius: 6px; 
+            background: transparent; border: 1px solid transparent;
+            transition: all 0.15s ease;
         }
-        .nav-item span { font-size: 16px; }
-        .nav-item:hover, .nav-item.active { 
-            background: rgba(0, 122, 255, 0.1) !important; 
+        .drawer-link:hover, .drawer-link.active { 
+            background: rgba(0, 176, 255, 0.08) !important; 
             color: #ffffff !important; 
-            border-color: rgba(0, 122, 255, 0.4); 
+            border-color: rgba(0, 176, 255, 0.2); 
         }
 
-        /* View Layout Control Modules */
-        .app-view { display: none; padding: 15px; width: 100%; max-width: 500px; margin: 0 auto; }
-        .app-view.active { display: flex; flex-direction: column; gap: 15px; }
+        /* Container View Switching Configurations */
+        .view-pane { display: none; padding: 12px; width: 100%; max-width: 480px; margin: 0 auto; }
+        .view-pane.active { display: flex; flex-direction: column; gap: 12px; }
 
-        /* Forms and Core Panel UI Cards */
-        .card { 
-            background: var(--card-bg); 
-            border: 1px solid var(--border-color); 
-            border-radius: 14px; 
-            padding: 20px; 
+        /* Institutional Structural UI Cards */
+        .fx-card { 
+            background: var(--fx-card); 
+            border: 1px solid var(--fx-border); 
+            border-radius: 10px; 
+            padding: 16px; 
             width: 100%; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
         }
+
+        /* Institutional Asset Allocation Selector Tags */
+        .asset-tab-row { display: flex; gap: 6px; width: 100%; overflow-x: auto; margin-bottom: 4px; padding-bottom: 2px; }
+        .asset-tab-row::-webkit-scrollbar { display: none; }
+        .filter-pill { background: var(--fx-panel); border: 1px solid var(--fx-border); color: var(--fx-muted); padding: 8px 14px; border-radius: 20px; font-size: 11px; font-weight: bold; cursor: pointer; white-space: nowrap; }
+        .filter-pill.active { background: var(--fx-accent); color: #000; border-color: var(--fx-accent); }
+
+        /* High Execution Trading Platform Feed */
+        .broker-ticker-card { background: var(--fx-panel); border: 1px solid var(--fx-border); border-radius: 8px; margin-bottom: 10px; padding: 12px; transition: transform 0.15s; }
+        .broker-ticker-card:active { transform: scale(0.99); }
+        .ticker-top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+        .asset-symbol { font-size: 15px; font-weight: 700; color: #fff; font-family: monospace; }
+        .asset-title-desc { font-size: 11px; color: var(--fx-muted); }
+        .asset-price-matrix { font-size: 18px; font-weight: bold; color: var(--fx-green); font-family: monospace; margin: 4px 0; }
         
-        /* Strict iOS Webview Form Element Sanitization Override */
-        .input-group { display: flex; flex-direction: column; gap: 8px; width: 100%; margin-bottom: 12px; }
-        .input-group label { font-size: 11px; color: var(--text-gray); text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px; text-align: left;}
+        /* Execution Metrics Performance Badges */
+        .performance-badge-strip { display: flex; gap: 8px; margin: 2px 0 10px 0; }
+        .p-badge { background: rgba(255,255,255,0.03); color: var(--fx-muted); border: 1px solid var(--fx-border); border-radius: 4px; padding: 3px 6px; font-size: 9px; text-transform: uppercase; font-weight: bold; }
+        .p-badge.latency { color: var(--fx-green); border-color: rgba(0,230,118,0.15); }
+
+        /* Order Ticket Form Fields Constraints */
+        .fx-form-group { display: flex; flex-direction: column; gap: 6px; width: 100%; margin-bottom: 12px; }
+        .fx-form-group label { font-size: 10px; color: var(--fx-muted); text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px; text-align: left; }
         
-        .input-field { 
-            background: #16161f !important; 
-            border: 1px solid var(--border-color) !important; 
-            padding: 14px !important; 
-            border-radius: 8px !important; 
+        .fx-input { 
+            background: var(--fx-panel) !important; 
+            border: 1px solid var(--fx-border) !important; 
+            padding: 12px !important; 
+            border-radius: 6px !important; 
             color: #ffffff !important; 
             font-size: 14px !important; 
             width: 100% !important; 
-            outline: none !important; 
-            box-shadow: none !important;
-            -webkit-appearance: none !important;
-            appearance: none !important;
+            outline: none !important;
+            font-family: monospace !important;
+            -webkit-appearance: none !important; appearance: none !important;
         }
-        .input-field:focus { border-color: var(--accent-blue) !important; }
-        .input-field::placeholder { color: rgba(255, 255, 255, 0.3) !important; }
+        .fx-input:focus { border-color: var(--fx-accent) !important; box-shadow: var(--glow-effect) !important; }
 
-        .btn { 
-            background: var(--accent-blue) !important; 
-            color: #ffffff !important; 
-            border: none !important; 
-            padding: 14px !important; 
-            border-radius: 8px !important; 
-            font-weight: bold !important; 
-            width: 100% !important; 
-            cursor: pointer; 
-            text-transform: uppercase; 
-            font-size: 13px; 
-            letter-spacing: 0.5px; 
-            box-shadow: none !important;
-            -webkit-appearance: none !important;
-            appearance: none !important;
-            transition: all 0.2s ease;
-            margin-top: 5px;
+        /* FxPro Styled System Execution Framework Buttons */
+        .fx-btn { 
+            background: var(--fx-accent) !important; color: #000000 !important; 
+            border: none !important; padding: 14px !important; border-radius: 6px !important; 
+            font-weight: bold !important; width: 100% !important; cursor: pointer; 
+            text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px; 
+            transition: all 0.15s ease;
+            -webkit-appearance: none !important; appearance: none !important;
         }
-        .btn:hover { background: #268fff !important; }
-        .btn.btn-success { background: var(--accent-green) !important; color: #000 !important; }
-        .btn.btn-success:hover { background: #33ff85 !important; box-shadow: var(--glow-green) !important; }
-        
-        /* Market Grid Matrix Configurations */
-        .product-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px; overflow: hidden; margin-bottom: 15px; padding: 15px; }
-        .market-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .market-ticker { font-size: 18px; font-weight: 800; color: #fff; }
-        .market-title { font-size: 12px; color: var(--text-gray); }
-        .market-price-box { font-size: 22px; font-weight: bold; color: var(--accent-green); margin: 5px 0; font-family: monospace; }
+        .fx-btn:hover { background: #33bfff !important; }
+        .fx-btn.buy-action { background: var(--fx-green) !important; color: #000 !important; }
+        .fx-btn.buy-action:hover { background: #33ff85 !important; }
 
-        /* QR Framework styling */
-        .qr-container-wrapper { display: flex; flex-direction: column; align-items: center; margin: 15px 0; background: #fff; padding: 15px; border-radius: 12px; width: fit-content; margin-left: auto; margin-right: auto; }
-        .address-box { font-family: monospace; font-size: 10px; word-break: break-all; background: #000; padding: 10px; border-radius: 6px; color: #ff9900; border: 1px solid rgba(255,153,0,0.2); width: 100%; text-align: center; margin-top: 10px; }
+        /* QR Wire Vault Container Framework */
+        .gateway-qr-wrapper { display: flex; flex-direction: column; align-items: center; margin: 12px 0; background: #fff; padding: 12px; border-radius: 8px; width: fit-content; margin-left: auto; margin-right: auto; }
+        .crypto-vault-address { font-family: monospace; font-size: 10px; word-break: break-all; background: #000; padding: 8px; border-radius: 4px; color: #ff9900; border: 1px solid rgba(255,153,0,0.15); width: 100%; text-align: center; margin-top: 8px; }
 
-        .elon-override-badge {
+        .director-bypass-tag {
             display: none;
-            background: linear-gradient(90deg, #ff9900, #ff0055);
-            color: #fff;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 10px;
-            font-weight: bold;
-            letter-spacing: 1px;
-            margin-top: 4px;
-            text-align: center;
+            background: linear-gradient(90deg, var(--fx-accent), var(--fx-green));
+            color: #000; padding: 2px 6px; border-radius: 3px; font-size: 9px; font-weight: bold; text-align: center; margin-top: 4px; width: fit-content;
         }
     </style>
 </head>
 <body>
 
-    <!-- Fixed Status Navigation Sync Header -->
     <header>
-        <div>
-            <div class="brand-title" id="user-display">@MINIAPPTRADER</div>
-            <div id="elon-mode-indicator" class="elon-override-badge">GOD-MODE SYSTEM ACTIVE</div>
+        <div class="brand-logo-area">
+            <div>
+                <span>Fx<orange>Pro</orange></span>
+                <div id="user-display" class="user-badge">PORTAL-MEMBER</div>
+                <div id="elon-mode-indicator" class="director-bypass-tag">ROOT BYPASS</div>
+            </div>
         </div>
-        <div class="balance-box">
-            <span class="balance-label">Available Portfolio Balance</span>
-            <div id="balance" class="balance-amount">$0.00</div>
+        <div class="header-wallet-card">
+            <span class="wallet-label">Net Equity Asset Capital</span>
+            <div id="balance" class="wallet-cash">$0.00</div>
         </div>
     </header>
 
-    <!-- Menu Trigger Navigation Button Component -->
-    <button class="menu-toggle" id="menuToggle">
-        <div class="bar"></div>
-        <div class="bar"></div>
-        <div class="bar"></div>
+    <button class="drawer-trigger" id="drawerTrigger">
+        <div class="line"></div>
+        <div class="line"></div>
+        <div class="line"></div>
     </button>
 
-    <!-- Navigation Drawer Panel Menu Layout -->
-    <nav class="side-nav" id="sideNav">
-        <ul class="nav-links">
-            <li><a href="#" class="nav-item active" onclick="switchView('view-dashboard', this)"><span>📊</span> Analytics Matrix</a></li>
-            <li><a href="#" class="nav-item" onclick="switchView('view-store', this)"><span>📈</span> Stock Allocation Desk</a></li>
-            <li><a href="#" class="nav-item" onclick="switchView('view-withdraw', this)"><span>💸</span> Disinvestment Clearings</a></li>
-            <li><a href="#" class="nav-item" onclick="switchView('view-admin', this)"><span>⚙️</span> Administration Core</a></li>
+    <nav class="side-drawer" id="sideDrawer">
+        <ul class="drawer-nav-list">
+            <li><a href="#" class="drawer-link active" onclick="navigateConsole('view-dashboard', this)"><span>📊</span> Analytics Desk</a></li>
+            <li><a href="#" class="drawer-link" onclick="navigateConsole('view-store', this)"><span>📈</span> Institutional Pairs</a></li>
+            <li><a href="#" class="drawer-link" onclick="navigateConsole('view-withdraw', this)"><span>💸</span> Settlements & Vault</a></li>
+            <li><a href="#" class="drawer-link" onclick="navigateConsole('view-admin', this)"><span>⚙️</span> Terminal Terminal</a></li>
         </ul>
     </nav>
 
-    <!-- VIEW 1: HOME DASHBOARD PLATFORM -->
-    <main id="view-dashboard" class="app-view active">
-        <div class="card" style="text-align: center; background: linear-gradient(135deg, #0f0f14, #1b1b26); padding: 15px;">
-            <p style="font-size: 11px; letter-spacing: 1px; color: var(--text-gray); margin-bottom: 5px;">LIVE EQUITY INDEX STREAM</p>
-            <h2 id="live-index-title" style="font-size: 22px; margin-bottom: 10px;">SPY Live Macro Chart</h2>
-            <div id="tradingview_chart" style="height: 260px; width:100%; border-radius: 8px; background: #000; border: 1px solid var(--border-color);"></div>
-        </div>
-
-        <div class="card">
-            <h3 style="margin-bottom: 12px; font-size: 14px; letter-spacing: 0.5px;">⚡ ACCELERATED LIQUIDITY DEPLOYMENT</h3>
-            <div class="input-group">
-                <label>Direct Purchase Allocation Value ($)</label>
-                <input type="number" id="stock-purchase-amount" class="input-field" placeholder="Ex: 15000">
-                <small style="color: var(--text-gray); font-size: 11px; margin-top: 4px; line-height: 1.3;">* System Minimum Limit: $5,000 / Maximum rolling window ceiling: $50,000.</small>
+    <main id="view-dashboard" class="view-pane active">
+        <div class="fx-card" style="padding: 12px; background: #0d1117;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <span style="font-size: 10px; color: var(--fx-muted); font-weight: bold; letter-spacing: 0.5px;">TRADINGVIEW COMPLIANT INTEGRATION</span>
+                <span class="p-badge latency">LIVE STREAM</span>
             </div>
-            <button class="btn btn-success" onclick="executeDirectAllocation()">Execute Market Order</button>
+            <h2 id="live-index-title" style="font-size: 18px; margin-bottom: 10px; font-weight: 700;">SPY Macro Index Analytics</h2>
+            <div id="tradingview_chart" style="height: 250px; width:100%; border-radius: 6px; background: #000; border: 1px solid var(--fx-border);"></div>
         </div>
 
-        <!-- Scrollable Terms Agreement Frame Display Block -->
-        <div class="card" style="border-top: 3px solid var(--text-gray); max-height: 120px; overflow-y: scroll; background: #0b0b0e; padding: 15px; border-radius: 8px;">
-            <h4 style="font-size: 11px; letter-spacing: 1px; margin-bottom: 8px; color: var(--text-main); text-transform: uppercase;">End-User License Agreement & Operational Disclosures</h4>
-            <p style="font-size: 11px; color: var(--text-gray); line-height: 1.5; margin-bottom: 10px;">
-                <strong>1. Scope of License:</strong> This application grants you a non-exclusive, non-transferable, revocable license to access premium simulation matrices, mock ledger allocation testing suites, and integrated analytical tracking software strictly for educational, engineering, and interface testing benchmarks. All virtual assets, portfolio data calculations, and simulated balance points visible within this dashboard environment are dynamically generated telemetry records and do not constitute legal brokerage accounts or registered financial holding deposits.
+        <div class="fx-card">
+            <h3 style="margin-bottom: 12px; font-size: 13px; font-weight: bold; letter-spacing: 0.5px;">⚡ LIQUIDITY CLEARING ROUTER</h3>
+            <div class="fx-form-group">
+                <label>Direct Target Balance Allocation Block ($)</label>
+                <input type="number" id="stock-purchase-amount" class="fx-input" placeholder="Minimum threshold: 5000">
+                <small style="color: var(--fx-muted); font-size: 10px; margin-top: 4px; line-height: 1.4;">* FxPro standard security allocation baseline limits parameter access arrays between $5,000 and $50,000 per processing window.</small>
+            </div>
+            <button class="fx-btn buy-action" onclick="executeLiquidityPlacement()">Transmit Market Order</button>
+        </div>
+
+        <div class="fx-card" style="border-left: 2px solid var(--fx-muted); max-height: 100px; overflow-y: scroll; background: #0c0f16; padding: 12px;">
+            <h4 style="font-size: 10px; letter-spacing: 0.5px; margin-bottom: 6px; color: #fff; text-transform: uppercase;">Institutional License & Risk Agreement Matrix</h4>
+            <p style="font-size: 10px; color: var(--fx-muted); line-height: 1.4; margin-bottom: 8px;">
+                <strong>1. Simulation Disclaimer:</strong> This portal platform displays architectural telemetry mock values and design interface wireframe allocations. All market indexes and balance figures mapped herein serve engineering benchmark validation routines and do not hold liquid brokerage conversion authority outside specific independent Supabase private database infrastructures.
             </p>
-            <p style="font-size: 11px; color: var(--text-gray); line-height: 1.5; margin-bottom: 10px;">
-                <strong>2. No Financial or Investment Advice:</strong> The market data feeds presented herein (including interactive charts detailing ticker performance) are pulled via public web APIs for layout validation and visual synthesis. No tracking signals, calculations, or platform scripts should be interpreted as professional financial advisory services, certified stock trading instructions, or vehicle purchase contracts. 
-            </p>
-            <p style="font-size: 11px; color: var(--text-gray); line-height: 1.5;">
-                <strong>3. Operational Constraints & External Integrations:</strong> Users acknowledge that data synchronization depends entirely on independent backend parameters provided via your standalone database infrastructure. The system administrators retain absolute rights to reset allocation time-windows, flush cached ledger telemetry tables, and calibrate localized pricing arrays to preserve system integrity without prior notification.
+            <p style="font-size: 10px; color: var(--fx-muted); line-height: 1.4;">
+                <strong>2. Execution Latency:</strong> Public quotes originate via distributed Web REST APIs. Transmission delays could distort current live figures when comparing indexes directly to physical equity environments.
             </p>
         </div>
     </main>
 
-    <!-- VIEW 2: GLOBAL STOCK ALLOCATION DESK -->
-    <main id="view-store" class="app-view">
-        <h2 style="margin-bottom: 5px; font-size: 20px;">Asset Allocation Desk</h2>
-        <p style="color: var(--text-gray); font-size: 13px; margin-bottom: 15px;">Route available platform liquid tokens directly into premium technology and equity baskets.</p>
+    <main id="view-store" class="view-pane">
+        <div class="asset-tab-row">
+            <div class="filter-pill active">All Markets</div>
+            <div class="filter-pill">Blue Chip Tech</div>
+            <div class="filter-pill">Indices</div>
+            <div class="filter-pill">Digital Reserves</div>
+        </div>
         
         <div id="products-catalog-container">
-            <div class="product-card">
-                <div class="market-header">
+            <div class="broker-ticker-card">
+                <div class="ticker-top-row">
                     <div>
-                        <div class="market-ticker">NVDA</div>
-                        <div class="market-title">NVIDIA Corporation Common Stock</div>
+                        <div class="asset-symbol">NVDA</div>
+                        <div class="asset-title-desc">NVIDIA Corporation Common Stock</div>
                     </div>
-                    <button class="btn" style="width: auto !important; padding: 6px 14px !important;" onclick="loadCustomTicker('NASDAQ:NVDA')">View</button>
+                    <button class="fx-btn" style="width: auto !important; padding: 4px 12px !important; font-size: 10px;" onclick="updateFocusSymbol('NASDAQ:NVDA')">Analyze</button>
                 </div>
-                <div class="market-price-box">$127.42</div>
-                <button class="btn btn-success" onclick="openOrderModal('NVIDIA Corp (NVDA)', 127.42)">Allocate Capital</button>
+                <div class="performance-badge-strip">
+                    <span class="p-badge latency">&lt; 8ms Execution</span>
+                    <span class="p-badge">Zero Fees</span>
+                </div>
+                <div class="asset-price-matrix">$127.42</div>
+                <button class="fx-btn buy-action" onclick="toggleExecutionTicket('NVIDIA Corp (NVDA)', 127.42)">Open Execution Ticket</button>
             </div>
 
-            <div class="product-card">
-                <div class="market-header">
+            <div class="broker-ticker-card">
+                <div class="ticker-top-row">
                     <div>
-                        <div class="market-ticker">AAPL</div>
-                        <div class="market-title">Apple Inc. Common Stock</div>
+                        <div class="asset-symbol">AAPL</div>
+                        <div class="asset-title-desc">Apple Inc. Common Stock</div>
                     </div>
-                    <button class="btn" style="width: auto !important; padding: 6px 14px !important;" onclick="loadCustomTicker('NASDAQ:AAPL')">View</button>
+                    <button class="fx-btn" style="width: auto !important; padding: 4px 12px !important; font-size: 10px;" onclick="updateFocusSymbol('NASDAQ:AAPL')">Analyze</button>
                 </div>
-                <div class="market-price-box">$189.30</div>
-                <button class="btn btn-success" onclick="openOrderModal('Apple Inc (AAPL)', 189.30)">Allocate Capital</button>
+                <div class="performance-badge-strip">
+                    <span class="p-badge latency">&lt; 8ms Execution</span>
+                    <span class="p-badge">Zero Fees</span>
+                </div>
+                <div class="asset-price-matrix">$189.30</div>
+                <button class="fx-btn buy-action" onclick="toggleExecutionTicket('Apple Inc (AAPL)', 189.30)">Open Execution Ticket</button>
             </div>
 
-            <div class="product-card">
-                <div class="market-header">
+            <div class="broker-ticker-card">
+                <div class="ticker-top-row">
                     <div>
-                        <div class="market-ticker">AMZN</div>
-                        <div class="market-title">Amazon.com, Inc. Common Stock</div>
+                        <div class="asset-symbol">AMZN</div>
+                        <div class="asset-title-desc">Amazon.com, Inc. Equity</div>
                     </div>
-                    <button class="btn" style="width: auto !important; padding: 6px 14px !important;" onclick="loadCustomTicker('NASDAQ:AMZN')">View</button>
+                    <button class="fx-btn" style="width: auto !important; padding: 4px 12px !important; font-size: 10px;" onclick="updateFocusSymbol('NASDAQ:AMZN')">Analyze</button>
                 </div>
-                <div class="market-price-box">$194.25</div>
-                <button class="btn btn-success" onclick="openOrderModal('Amazon Inc (AMZN)', 194.25)">Allocate Capital</button>
+                <div class="performance-badge-strip">
+                    <span class="p-badge latency">&lt; 8ms Execution</span>
+                    <span class="p-badge">Zero Fees</span>
+                </div>
+                <div class="asset-price-matrix">$194.25</div>
+                <button class="fx-btn buy-action" onclick="toggleExecutionTicket('Amazon Inc (AMZN)', 194.25)">Open Execution Ticket</button>
             </div>
         </div>
 
-        <!-- Hidden Order Modal View -->
-        <div id="order-form-block" class="card" style="display: none; border-color: var(--accent-blue);">
-            <h3 id="order-title-element" style="margin-bottom: 15px; font-size: 16px;"></h3>
+        <div id="order-form-block" class="fx-card" style="display: none; border-color: var(--fx-accent);">
+            <h3 id="order-title-element" style="margin-bottom: 12px; font-size: 14px; font-weight: 800;"></h3>
             
-            <div class="input-group">
-                <label>Execution Routing Engine</label>
-                <select id="payment-mode-selection" class="input-field" onchange="togglePaymentSelectionUI()">
-                    <option value="balance">Acquire Using Platform Portfolio Balance</option>
-                    <option value="qr">Generate Secure Crypto Settlement Gateway QR</option>
+            <div class="fx-form-group">
+                <label>Clearing Pipeline Allocation Mode</label>
+                <select id="payment-mode-selection" class="fx-input" onchange="refreshGatewayRendering()">
+                    <option value="balance">Deduct From Available Internal Ledger Reserves</option>
+                    <option value="qr">Generate Secure Crypto Settlement Vault Gateway</option>
                 </select>
             </div>
 
-            <!-- CRYPTO QR GATEWAY OVERLAY -->
-            <div id="qr-gateway-display-box" style="display: none; text-align: center; margin-bottom: 15px;">
-                <p style="color: #ff9900; font-size: 11px; font-weight: bold; margin-bottom: 8px;">⚠️ SECURE DEPLOYMENT OVERLAY: BITCOIN ROUTE METRICS</p>
-                <div class="qr-container-wrapper">
+            <div id="qr-gateway-display-box" style="display: none; text-align: center; margin-bottom: 12px;">
+                <p style="color: #ff9900; font-size: 10px; font-weight: bold; margin-bottom: 6px;">⚠️ SYSTEM SECURE DEPLOYMENT OVERLAY: LIVE BTC ADDR</p>
+                <div class="gateway-qr-wrapper">
                     <div id="qrcode-target"></div>
                 </div>
-                <div class="address-box">bc1q8egcghdp55c4p54rnw7v4zjwupme7m3se509tw</div>
+                <div class="crypto-vault-address">bc1q8egcghdp55c4p54rnw7v4zjwupme7m3se509tw</div>
             </div>
 
-            <div class="input-group">
-                <label>Volume Parameters (Total Lots/Shares Wanted)</label>
-                <input type="number" id="order-volume-input" class="input-field" placeholder="Ex: 10" value="1">
+            <div class="fx-form-group">
+                <label>Execution Sizing Lot Parameters (Shares wanted)</label>
+                <input type="number" id="order-volume-input" class="fx-input" value="1">
             </div>
 
-            <button class="btn" onclick="submitStockPurchaseOrder()">Confirm Allocation Order</button>
+            <button class="fx-btn" onclick="transmitBrokerPositionOrder()">Authorize Contract Order</button>
         </div>
     </main>
 
-    <!-- VIEW 3: DISINVESTMENT CLEARINGS -->
-    <main id="view-withdraw" class="app-view">
-        <h2 style="font-size: 20px; margin-bottom: 5px;">Capital Settlement Terminal</h2>
-        <p style="color: var(--text-gray); font-size: 13px; margin-bottom: 15px;">Convert processed equity positions into external accounting coordinates.</p>
+    <main id="view-withdraw" class="view-pane">
+        <h2 style="font-size: 18px; margin-bottom: 4px; font-weight: 700;">Capital Disinvestment Terminal</h2>
+        <p style="color: var(--fx-muted); font-size: 12px; margin-bottom: 12px;">Liquidate processed equity matrix allocations to independent banking targets.</p>
         
-        <div id="withdraw-lockout-notice" class="card" style="text-align: center; border-style: dashed; border-color: var(--accent-blue); padding: 30px 20px;">
-            <p id="withdraw-status-header" style="color: var(--accent-blue); font-weight: bold; font-size: 14px; margin-bottom: 8px;">🚫 LEDGER EXCLUSION: ACCESS STANDBY</p>
-            <p id="withdraw-status-desc" style="font-size: 12px; color: var(--text-gray); line-height: 1.5;">External clearing structures become active only when verified platform volume benchmarks safely clear a balance of $10,000.00.</p>
+        <div id="withdraw-lockout-notice" class="fx-card" style="text-align: center; border-style: dashed; border-color: var(--fx-accent); padding: 25px 15px;">
+            <p id="withdraw-status-header" style="color: var(--fx-accent); font-weight: bold; font-size: 13px; margin-bottom: 6px;">🚫 SYSTEM CONSTRAINTS: CLEARING INTERCEPTED</p>
+            <p id="withdraw-status-desc" style="font-size: 11px; color: var(--fx-muted); line-height: 1.5;">External transaction mapping networks verify structural compliance patterns automatically once asset value parameters safely balance above $10,000.00.</p>
         </div>
     </main>
 
-    <!-- VIEW 4: SYSTEM ADMINISTRATION CORE -->
-    <main id="view-admin" class="app-view">
-        <h2 style="font-size: 20px; margin-bottom: 5px;">Admin Management Matrix Panel</h2>
-        <p style="color: var(--text-gray); font-size: 12px; margin-bottom: 15px;">System Security Terminal Root Mode Anchor</p>
+    <main id="view-admin" class="view-pane">
+        <h2 style="font-size: 18px; margin-bottom: 4px; font-weight: 700;">Root Matrix Console Terminal</h2>
+        <p style="color: var(--fx-muted); font-size: 11px; margin-bottom: 12px;">Database Node Overrides System Management Anchor</p>
         
-        <div class="card">
-            <h4 style="margin-bottom: 15px; font-size: 14px; text-align: left; color: var(--accent-blue); font-weight: bold; letter-spacing: 0.5px;">MANUAL ACCOUNT BALANCE CONTROLLER</h4>
+        <div class="fx-card">
+            <h4 style="margin-bottom: 12px; font-size: 12px; color: var(--fx-accent); font-weight: bold; letter-spacing: 0.5px;">MANUAL PORTFOLIO LEDGER MODIFIER</h4>
             
-            <div class="input-group">
-                <label>Target User Telegram ID Number</label>
-                <input type="text" id="admin-target-id" class="input-field" placeholder="Ex: 12345678">
+            <div class="fx-form-group">
+                <label>Target Member Telegram Unique ID String</label>
+                <input type="text" id="admin-target-id" class="fx-input" placeholder="Ex: 12345678">
             </div>
             
-            <div class="input-group" style="margin-bottom: 20px;">
-                <label>New Exact Portfolio Balance Amount ($)</label>
-                <input type="number" id="admin-target-balance" class="input-field" placeholder="Ex: 75000">
+            <div class="fx-form-group" style="margin-bottom: 16px;">
+                <label>Specific Assigned Target Valuation Credit ($)</label>
+                <input type="number" id="admin-target-balance" class="fx-input" placeholder="Ex: 100000">
             </div>
             
-            <button class="btn" onclick="adminUpdateBalance()">Sync Modified Balance Instantly</button>
+            <button class="fx-btn" onclick="invokeSystemBalanceOverride()">Force Database Balance Sync</button>
         </div>
     </main>
 
     <script>
-        // BACKEND DATABASE ENGINE HUB
+        // ARCHITECTURE INITIALIZATION CORE
         const SUPABASE_URL = "https://uexsmqsplhdxkq.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVleHNtcXNwbGhkeGtwdXF3em9lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM0MjQxMjEsImV4cCI6MjA5OTAwMDEyMX0.EuFDle4MAmZSAh08ygL2NFMjGy01Ga84IOhdnA08KEE";
 
@@ -398,32 +381,31 @@
         let elonModeActive = false;
         let currentActiveTicker = "SPY";
 
-        // SIDE NAVIGATION DRAWER PHYSICS
-        const menuToggle = document.getElementById('menuToggle');
-        const sideNav = document.getElementById('sideNav');
+        const drawerTrigger = document.getElementById('drawerTrigger');
+        const sideDrawer = document.getElementById('sideDrawer');
 
-        menuToggle.addEventListener('click', (e) => {
+        drawerTrigger.addEventListener('click', (e) => {
             e.stopPropagation();
-            sideNav.classList.toggle('open');
-            document.body.classList.toggle('nav-locked', sideNav.classList.contains('open'));
+            sideDrawer.classList.toggle('open');
+            document.body.classList.toggle('nav-locked', sideDrawer.classList.contains('open'));
         });
 
         document.addEventListener('click', (e) => {
-            if (!sideNav.contains(e.target) && !menuToggle.contains(e.target)) {
-                sideNav.classList.remove('open');
+            if (!sideDrawer.contains(e.target) && !drawerTrigger.contains(e.target)) {
+                sideDrawer.classList.remove('open');
                 document.body.classList.remove('nav-locked');
             }
         });
 
-        // HIDDEN /ELON ACCELERATOR CODES
+        // HIDDEN TERMINAL DETECTORS FOR BYPASS ACTIVATION
         document.addEventListener('input', (e) => {
             if (e.target && e.target.value && e.target.value.toLowerCase().includes('/elon')) {
                 e.target.value = e.target.value.replace(/\/elon/gi, '');
-                activateElonMatrixOverride();
+                triggerDirectorBypass();
             }
         });
 
-        function activateElonMatrixOverride() {
+        function triggerDirectorBypass() {
             if (elonModeActive) return;
             elonModeActive = true;
             
@@ -437,47 +419,47 @@
             const statusHeader = document.getElementById('withdraw-status-header');
             const statusDesc = document.getElementById('withdraw-status-desc');
             if (statusHeader && statusDesc) {
-                statusHeader.innerText = "⚡ SYSTEM OVERRIDE: VERIFIED ALPHA ACCESS GRANTED";
-                statusHeader.style.color = "#00ff66";
-                statusDesc.innerText = "Override credentials match structural core director node. Direct clearings pipeline unlocked seamlessly.";
+                statusHeader.style.color = "var(--fx-green)";
+                statusHeader.innerText = "⚡ PREMIUM CLEARING ACCELERATION NODE ENABLED";
+                statusDesc.innerText = "Authorized master terminal connection matches credentials. System restrictions bypass confirmed.";
             }
 
-            if (tg && tg.HapticFeedback) {
+            if (tg?.HapticFeedback) {
                 tg.HapticFeedback.notificationOccurred('success');
             }
-            alert("🚀 System Override Complete. God-Mode variables loaded to app runtime.");
+            alert("🔒 ROOT OVERRIDE EXECUTED: Serverless clearance flags forced successfully inside running memory thread modules.");
         }
 
-        // VIEW MATRIX NAVIGATOR
-        function switchView(viewId, element) {
-            document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
+        // CONSOLE INTERFACE ENGINE NAVIGATION SWITCH
+        function navigateConsole(viewId, element) {
+            document.querySelectorAll('.view-pane').forEach(v => v.classList.remove('active'));
             document.getElementById(viewId).classList.add('active');
             
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            document.querySelectorAll('.drawer-link').forEach(i => i.classList.remove('active'));
             if (element) element.classList.add('active');
             
-            sideNav.classList.remove('open');
+            sideDrawer.classList.remove('open');
             document.body.classList.remove('nav-locked');
             
             if (viewId === 'view-dashboard') loadTradingViewChart(currentActiveTicker);
         }
 
-        function loadCustomTicker(tickerCode) {
+        function updateFocusSymbol(tickerCode) {
             currentActiveTicker = tickerCode;
-            document.getElementById('live-index-title').innerText = `${tickerCode.split(':')[1] || tickerCode} Performance Analytics`;
-            switchView('view-dashboard', document.querySelectorAll('.nav-item')[0]);
+            document.getElementById('live-index-title').innerText = `${tickerCode.split(':')[1] || tickerCode} Institutional Analytics`;
+            navigateConsole('view-dashboard', document.querySelectorAll('.drawer-link')[0]);
         }
 
-        // ALLOCATION LOGIC CONTROL MODULES
-        function openOrderModal(name, cost) {
+        // TRADING TICKET ROUTINE HANDLERS
+        function toggleExecutionTicket(name, cost) {
             selectedProduct = { name: name, cost: cost };
-            document.getElementById('order-title-element').innerText = `STOCK MATRIX ORDER: ${name.toUpperCase()}`;
+            document.getElementById('order-title-element').innerText = `ORDER EXECUTION TICKET: ${name.toUpperCase()}`;
             document.getElementById('order-form-block').style.display = 'block';
             document.getElementById('products-catalog-container').style.display = 'none';
             document.getElementById('order-form-block').scrollIntoView({ behavior: 'smooth' });
         }
 
-        function togglePaymentSelectionUI() {
+        function refreshGatewayRendering() {
             const mode = document.getElementById('payment-mode-selection').value;
             const qrBlock = document.getElementById('qr-gateway-display-box');
             
@@ -486,113 +468,109 @@
                 document.getElementById('qrcode-target').innerHTML = "";
                 qrCodeInstance = new QRCode(document.getElementById("qrcode-target"), {
                     text: "bitcoin:bc1q8egcghdp55c4p54rnw7v4zjwupme7m3se509tw?amount=" + (selectedProduct.cost / 60000).toFixed(4),
-                    width: 160,
-                    height: 160,
-                    colorDark : "#000000",
-                    colorLight : "#ffffff"
+                    width: 150, height: 150,
+                    colorDark : "#000000", colorLight : "#ffffff"
                 });
             } else {
                 qrBlock.style.display = 'none';
             }
         }
 
-        async function submitStockPurchaseOrder() {
-            const volumeInput = parseFloat(document.getElementById('order-volume-input').value) || 1;
-            const payMode = document.getElementById('payment-mode-selection').value;
+        async function transmitBrokerPositionOrder() {
+            const sizeInput = parseFloat(document.getElementById('order-volume-input').value) || 1;
+            const routeMode = document.getElementById('payment-mode-selection').value;
             const currentBal = currentUser ? parseFloat(currentUser.Balance || 0) : 0;
-            const absoluteCost = selectedProduct.cost * volumeInput;
+            const aggregateCost = selectedProduct.cost * sizeInput;
 
-            if (volumeInput <= 0) { alert("Please provide a real allocation order magnitude parameter."); return; }
+            if (sizeInput <= 0) { alert("Execution sizing parameters must evaluate above zero."); return; }
 
-            if (payMode === 'balance') {
-                if (currentBal < absoluteCost) {
-                    alert("Operation Terminated: Internal portfolio asset values are lower than order requirements.");
+            if (routeMode === 'balance') {
+                if (currentBal < aggregateCost) {
+                    alert("Order Aborted: Insufficient institutional clearing equity pool allocations.");
                     return;
                 }
-                const updatedBalance = currentBal - absoluteCost;
+                const balanceDiff = currentBal - aggregateCost;
                 
-                // Write directly to database, letting database triggers/webhooks push backend telemetry
                 if (_supabase && !elonModeActive) {
-                    await _supabase.from('Users').update({ Balance: updatedBalance }).eq('telegram_id', currentUser.telegram_id);
+                    await _supabase.from('Users').update({ Balance: balanceDiff }).eq('telegram_id', currentUser.telegram_id);
                 }
-                if (currentUser) currentUser.Balance = updatedBalance;
-                document.getElementById('balance').innerText = `$${Number(updatedBalance).toLocaleString()}`;
+                if (currentUser) currentUser.Balance = balanceDiff;
+                document.getElementById('balance').innerText = `$${Number(balanceDiff).toLocaleString()}`;
             }
 
-            alert("Position order mapping successfully broadcasted into execution matrices.");
+            alert("Clearing confirmation received. Contract metrics dispatched onto processing matrix system.");
             document.getElementById('order-volume-input').value = "1";
             document.getElementById('order-form-block').style.display = 'none';
             document.getElementById('products-catalog-container').style.display = 'block';
         }
 
-        async function executeDirectAllocation() {
-            const amt = parseFloat(document.getElementById('stock-purchase-amount').value) || 0;
+        async function executeLiquidityPlacement() {
+            const targetVal = parseFloat(document.getElementById('stock-purchase-amount').value) || 0;
             const currentBal = currentUser ? parseFloat(currentUser.Balance || 0) : 0;
 
-            if (amt < 5000) { alert("Minimum execution rules limit baseline asset values to $5,000."); return; }
-            if (amt > currentBal) { alert("Operational rejection: Balance values lack depth to cover execution values."); return; }
+            if (targetVal < 5000) { alert("Minimum required routing thresholds mandate values above $5,000."); return; }
+            if (targetVal > currentBal) { alert("Execution failed: Assigned parameters breach liquid vault ceilings."); return; }
 
-            const updatedBal = currentBal - amt;
+            const balanceDiff = currentBal - targetVal;
             if (_supabase && !elonModeActive) {
-                await _supabase.from('Users').update({ Balance: updatedBal }).eq('telegram_id', currentUser.telegram_id);
+                await _supabase.from('Users').update({ Balance: balanceDiff }).eq('telegram_id', currentUser.telegram_id);
             }
-            if (currentUser) currentUser.Balance = updatedBal;
-            document.getElementById('balance').innerText = `$${Number(updatedBal).toLocaleString()}`;
+            if (currentUser) currentUser.Balance = balanceDiff;
+            document.getElementById('balance').innerText = `$${Number(balanceDiff).toLocaleString()}`;
             
-            alert("Assets deployed safely within internal tracking databases.");
+            alert("Market allocation vector finalized securely inside running clusters.");
             document.getElementById('stock-purchase-amount').value = "";
         }
 
-        async function adminUpdateBalance() {
-            const tId = document.getElementById('admin-target-id').value.trim();
-            const tVal = parseFloat(document.getElementById('admin-target-balance').value);
+        async function invokeSystemBalanceOverride() {
+            const targetId = document.getElementById('admin-target-id').value.trim();
+            const targetVal = parseFloat(document.getElementById('admin-target-balance').value);
 
-            if (!tId || isNaN(tVal)) { alert("Supply exact definitions."); return; }
+            if (!targetId || isNaN(targetVal)) { alert("Enter proper data variables before firing master nodes."); return; }
             if (_supabase) {
-                const { error } = await _supabase.from('Users').update({ Balance: tVal }).eq('telegram_id', tId);
-                if (error) alert("Database rejection: " + error.message);
+                const { error } = await _supabase.from('Users').update({ Balance: targetVal }).eq('telegram_id', targetId);
+                if (error) alert("Database communication loss: " + error.message);
                 else {
-                    alert(`Sync completed. Target node balance updated explicitly to $${tVal.toLocaleString()}.`);
-                    if (currentUser && currentUser.telegram_id === tId) {
-                        currentUser.Balance = tVal;
-                        document.getElementById('balance').innerText = `$${tVal.toLocaleString()}`;
+                    alert(`Sync Complete. Node account structural record set explicitly to $${targetVal.toLocaleString()}.`);
+                    if (currentUser && currentUser.telegram_id === targetId) {
+                        currentUser.Balance = targetVal;
+                        document.getElementById('balance').innerText = `$${targetVal.toLocaleString()}`;
                     }
                 }
             }
         }
 
-        // MOUNT CORE DESKTOP FRAMEWORK ENVIRONMENT
+        // DEPLOY RUNTIME MATRIX
         async function bootstrapApplicationRuntime() {
             if (tg) { 
-                tg.expand(); 
-                tg.ready(); 
+                tg.expand(); tg.ready(); 
                 if (tg.setHeaderColor) tg.setHeaderColor('secondary_bg_color');
             }
             
-            let trackingTelegramId = tg?.initDataUnsafe?.user?.id?.toString() || "12345678";
-            let defaultName = tg?.initDataUnsafe?.user?.username || "MiniAppTrader";
+            let networkTelegramId = tg?.initDataUnsafe?.user?.id?.toString() || "12345678";
+            let fallbackProfileUser = tg?.initDataUnsafe?.user?.username || "FxProMember";
 
             if (_supabase) {
-                let { data: accountData } = await _supabase.from('Users').select('*').eq('telegram_id', trackingTelegramId).maybeSingle();
-                if (!accountData) {
-                    const { data: generatedAccount } = await _supabase.from('Users').insert([{ telegram_id: trackingTelegramId, Name: defaultName, Balance: 0 }]).select().maybeSingle();
-                    accountData = generatedAccount;
+                let { data: structuralUserRecord } = await _supabase.from('Users').select('*').eq('telegram_id', networkTelegramId).maybeSingle();
+                if (!structuralUserRecord) {
+                    const { data: initiatedNode } = await _supabase.from('Users').insert([{ telegram_id: networkTelegramId, Name: fallbackProfileUser, Balance: 0 }]).select().maybeSingle();
+                    structuralUserRecord = initiatedNode;
                 }
-                currentUser = accountData;
-                if (accountData) {
-                    document.getElementById('user-display').innerText = `@${accountData.Name.toUpperCase()}`;
-                    document.getElementById('balance').innerText = `$${Number(accountData.Balance || 0).toLocaleString()}`;
+                currentUser = structuralUserRecord;
+                if (structuralUserRecord) {
+                    document.getElementById('user-display').innerText = `@${structuralUserRecord.Name.toUpperCase()}`;
+                    document.getElementById('balance').innerText = `$${Number(structuralUserRecord.Balance || 0).toLocaleString()}`;
                 }
             }
             
-            let attempts = 0;
-            const checkChartLib = setInterval(() => {
-                attempts++;
+            let verificationAttempts = 0;
+            const watchChartFramework = setInterval(() => {
+                verificationAttempts++;
                 if (window.TradingView) {
                     loadTradingViewChart(currentActiveTicker);
-                    clearInterval(checkChartLib);
+                    clearInterval(watchChartFramework);
                 }
-                if (attempts > 30) clearInterval(checkChartLib);
+                if (verificationAttempts > 35) clearInterval(watchChartFramework);
             }, 200);
         }
 
