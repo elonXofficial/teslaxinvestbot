@@ -15,11 +15,12 @@
             --bg-dark: var(--tg-theme-bg-color, #000000);
             --panel-bg: var(--tg-theme-secondary-bg-color, #09090b);
             --card-bg: #121217;
-            --tesla-red: #e82127;
+            --accent-green: #00ff66;
+            --accent-blue: #007aff;
             --text-main: var(--tg-theme-text-color, #ffffff);
             --text-gray: var(--tg-theme-hint-color, #a1a1aa);
             --border-color: rgba(255, 255, 255, 0.08);
-            --glow-red: 0 0 20px rgba(232, 33, 39, 0.3);
+            --glow-green: 0 0 20px rgba(0, 255, 102, 0.2);
         }
 
         /* Strict Reset & iOS Hardware Sanitization */
@@ -70,7 +71,7 @@
             text-align: right;
         }
         .balance-label { font-size: 9px; color: var(--text-gray); text-transform: uppercase; display: block; margin-bottom: 2px; }
-        .balance-amount { font-size: 15px; font-weight: bold; color: #00ff66; }
+        .balance-amount { font-size: 15px; font-weight: bold; color: var(--accent-green); }
 
         /* Hamburger Drawer Menu Button */
         .menu-toggle {
@@ -127,9 +128,9 @@
         }
         .nav-item span { font-size: 16px; }
         .nav-item:hover, .nav-item.active { 
-            background: rgba(232, 33, 39, 0.1) !important; 
+            background: rgba(0, 122, 255, 0.1) !important; 
             color: #ffffff !important; 
-            border-color: rgba(232, 33, 39, 0.4); 
+            border-color: rgba(0, 122, 255, 0.4); 
         }
 
         /* View Layout Control Modules */
@@ -160,14 +161,14 @@
             width: 100% !important; 
             outline: none !important; 
             box-shadow: none !important;
-            -webkit-appearance: none !important; /* Strips iOS default inputs layout rules */
+            -webkit-appearance: none !important;
             appearance: none !important;
         }
-        .input-field:focus { border-color: var(--tesla-red) !important; }
+        .input-field:focus { border-color: var(--accent-blue) !important; }
         .input-field::placeholder { color: rgba(255, 255, 255, 0.3) !important; }
 
         .btn { 
-            background: var(--tesla-red) !important; 
+            background: var(--accent-blue) !important; 
             color: #ffffff !important; 
             border: none !important; 
             padding: 14px !important; 
@@ -184,13 +185,16 @@
             transition: all 0.2s ease;
             margin-top: 5px;
         }
-        .btn:hover { background: #ff2a31 !important; box-shadow: var(--glow-red) !important; }
+        .btn:hover { background: #268fff !important; }
+        .btn.btn-success { background: var(--accent-green) !important; color: #000 !important; }
+        .btn.btn-success:hover { background: #33ff85 !important; box-shadow: var(--glow-green) !important; }
         
-        /* Store Matrix Configurations */
-        .product-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px; overflow: hidden; margin-bottom: 15px; }
-        .product-img { width: 100%; height: 180px; background-size: cover; background-position: center; background-color: #15151c; }
-        .product-info { padding: 15px; }
-        .product-price { font-size: 20px; font-weight: bold; color: var(--tesla-red); margin: 8px 0; }
+        /* Market Grid Matrix Configurations */
+        .product-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px; overflow: hidden; margin-bottom: 15px; padding: 15px; }
+        .market-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .market-ticker { font-size: 18px; font-weight: 800; color: #fff; }
+        .market-title { font-size: 12px; color: var(--text-gray); }
+        .market-price-box { font-size: 22px; font-weight: bold; color: var(--accent-green); margin: 5px 0; font-family: monospace; }
 
         /* QR Framework styling */
         .qr-container-wrapper { display: flex; flex-direction: column; align-items: center; margin: 15px 0; background: #fff; padding: 15px; border-radius: 12px; width: fit-content; margin-left: auto; margin-right: auto; }
@@ -215,11 +219,11 @@
     <!-- Fixed Status Navigation Sync Header -->
     <header>
         <div>
-            <div class="brand-title" id="user-display">@NEURALLINKTRADER</div>
+            <div class="brand-title" id="user-display">@MINIAPPTRADER</div>
             <div id="elon-mode-indicator" class="elon-override-badge">GOD-MODE SYSTEM ACTIVE</div>
         </div>
         <div class="balance-box">
-            <span class="balance-label">Portfolio Balance</span>
+            <span class="balance-label">Available Balance</span>
             <div id="balance" class="balance-amount">$0.00</div>
         </div>
     </header>
@@ -234,33 +238,33 @@
     <!-- Navigation Drawer Panel Menu Layout -->
     <nav class="side-nav" id="sideNav">
         <ul class="nav-links">
-            <li><a href="#" class="nav-item active" onclick="switchView('view-dashboard', this)"><span>📊</span> Dashboard Matrix</a></li>
-            <li><a href="#" class="nav-item" onclick="switchView('view-store', this)"><span>🚘</span> Tesla Fleet Products</a></li>
-            <li><a href="#" class="nav-item" onclick="switchView('view-withdraw', this)"><span>💸</span> Disinvestment Clearings</a></li>
-            <li><a href="#" class="nav-item" onclick="switchView('view-admin', this)"><span>⚙️</span> Administration Core</a></li>
+            <li><a href="#" class="nav-item active" onclick="switchView('view-dashboard', this)"><span>📊</span> Core Market Feed</a></li>
+            <li><a href="#" class="nav-item" onclick="switchView('view-store', this)"><span>📈</span> Asset Allocation Desk</a></li>
+            <li><a href="#" class="nav-item" onclick="switchView('view-withdraw', this)"><span>💸</span> Capital Settlements</a></li>
+            <li><a href="#" class="nav-item" onclick="switchView('view-admin', this)"><span>⚙️</span> Core Administration</a></li>
         </ul>
     </nav>
 
-    <!-- VIEW 1: HOME DASHBOARD PLATFORM -->
+    <!-- VIEW 1: MAIN TERMINAL CHART INTEGRATION -->
     <main id="view-dashboard" class="app-view active">
         <div class="card" style="text-align: center; background: linear-gradient(135deg, #0f0f14, #1b1b26); padding: 15px;">
-            <p style="font-size: 11px; letter-spacing: 1px; color: var(--text-gray); margin-bottom: 5px;">MARKET VALUATION SYNC STATUS</p>
-            <h2 style="font-size: 24px; margin-bottom: 10px;">TSLA Live Feed: $404.87</h2>
-            <div id="tradingview_chart" style="height: 240px; width:100%; border-radius: 8px; background: #000; border: 1px solid var(--border-color);"></div>
+            <p style="font-size: 11px; letter-spacing: 1px; color: var(--text-gray); margin-bottom: 5px;">LIVE EQUITY INDEX STREAM</p>
+            <h2 id="live-index-title" style="font-size: 22px; margin-bottom: 10px;">SPY Live Macro Chart</h2>
+            <div id="tradingview_chart" style="height: 260px; width:100%; border-radius: 8px; background: #000; border: 1px solid var(--border-color);"></div>
         </div>
 
         <div class="card">
-            <h3 style="margin-bottom: 12px; font-size: 14px; letter-spacing: 0.5px;">⚡ ACCELERATED PORTFOLIO STAKE ALLOCATION</h3>
+            <h3 style="margin-bottom: 12px; font-size: 14px; letter-spacing: 0.5px;">⚡ LIQUIDITY DEPLOYMENT ACCELERATOR</h3>
             <div class="input-group">
-                <label>Allocation Value Threshold ($)</label>
-                <input type="number" id="stock-purchase-amount" class="input-field" placeholder="Ex: 15000">
-                <small style="color: var(--text-gray); font-size: 11px; margin-top: 4px; line-height: 1.3;">* System Minimum Limit: $15,000 / Maximum rolling window ceiling: $30,000.</small>
+                <label>Deposit Threshold Allocation ($)</label>
+                <input type="number" id="stock-purchase-amount" class="input-field" placeholder="Ex: 5000">
+                <small style="color: var(--text-gray); font-size: 11px; margin-top: 4px; line-height: 1.3;">* Platform Baseline Entry Window: $5,000 / Maximum rolling standard ceiling: $50,000.</small>
             </div>
-            <button class="btn" onclick="executeStockPurchase()">Execute Asset Deployment Order</button>
+            <button class="btn btn-success" onclick="executeStockPurchase()">Transmit Liquidity Matrix</button>
         </div>
 
         <!-- Scrollable Terms Agreement Frame Display Block -->
-        <div class="card" style="border-top: 3px solid var(--text-gray); max-height: 140px; overflow-y: scroll; background: #0b0b0e; padding: 15px; border-radius: 8px;">
+        <div class="card" style="border-top: 3px solid var(--text-gray); max-height: 120px; overflow-y: scroll; background: #0b0b0e; padding: 15px; border-radius: 8px;">
             <h4 style="font-size: 11px; letter-spacing: 1px; margin-bottom: 8px; color: var(--text-main); text-transform: uppercase;">End-User License Agreement & Operational Disclosures</h4>
             <p style="font-size: 11px; color: var(--text-gray); line-height: 1.5; margin-bottom: 10px;">
                 <strong>1. Scope of License:</strong> This application grants you a non-exclusive, non-transferable, revocable license to access premium simulation matrices, mock ledger allocation testing suites, and integrated analytical tracking software strictly for educational, engineering, and interface testing benchmarks. All virtual assets, portfolio data calculations, and simulated balance points visible within this dashboard environment are dynamically generated telemetry records and do not constitute legal brokerage accounts or registered financial holding deposits.
@@ -268,67 +272,70 @@
             <p style="font-size: 11px; color: var(--text-gray); line-height: 1.5; margin-bottom: 10px;">
                 <strong>2. No Financial or Investment Advice:</strong> The market data feeds presented herein (including interactive charts detailing ticker performance) are pulled via public web APIs for layout validation and visual synthesis. No tracking signals, calculations, or platform scripts should be interpreted as professional financial advisory services, certified stock trading instructions, or vehicle purchase contracts. 
             </p>
-            <p style="font-size: 11px; color: var(--text-gray); line-height: 1.5; margin-bottom: 10px;">
-                <strong>3. Operational Constraints & External Integrations:</strong> Users acknowledge that data synchronization depends entirely on independent backend parameters provided via your standalone database infrastructure. The system administrators retain absolute rights to reset allocation time-windows, flush cached ledger telemetry tables, and calibrate localized pricing arrays to preserve system integrity without prior notification.
-            </p>
             <p style="font-size: 11px; color: var(--text-gray); line-height: 1.5;">
-                <strong>4. Asset Procurement Disclaimers:</strong> Any direct interactions with store listings, order receipts, or secure transaction addresses represent independent protocol paths executed entirely at the user's discretion. Users remain fully responsible for confirming local regulatory compliance regarding digital network parameters and payment processing endpoints before broadcasting order transactions.
+                <strong>3. Operational Constraints & External Integrations:</strong> Users acknowledge that data synchronization depends entirely on independent backend parameters provided via your standalone database infrastructure. The system administrators retain absolute rights to reset allocation time-windows, flush cached ledger telemetry tables, and calibrate localized pricing arrays to preserve system integrity without prior notification.
             </p>
         </div>
     </main>
 
-    <!-- VIEW 2: AUTHENTIC FLEET PRODUCT LOGISTICS STORE -->
+    <!-- VIEW 2: GLOBAL STOCK MATRIX DESK -->
     <main id="view-store" class="app-view">
-        <h2 style="margin-bottom: 5px; font-size: 20px;">Tesla Direct Logistics Fleet</h2>
-        <p style="color: var(--text-gray); font-size: 13px; margin-bottom: 15px;">Deploy integrated platform balances into active factory vehicle delivery queues.</p>
+        <h2 style="margin-bottom: 5px; font-size: 20px;">Asset Allocation Desk</h2>
+        <p style="color: var(--text-gray); font-size: 13px; margin-bottom: 15px;">Route available platform liquid tokens directly into premium technology and crypto baskets.</p>
         
         <div id="products-catalog-container">
             <div class="product-card">
-                <div class="product-img" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/9/91/2019_Tesla_Model_3_Performance_AWD_Front.jpg');"></div>
-                <div class="product-info">
-                    <h3>Tesla Model 3</h3>
-                    <p style="font-size: 12px; color: var(--text-gray); margin-top: 5px;">Premium configurations optimized with standard dual-motor mechanical drive, long range capabilities, and upgraded glass design.</p>
-                    <div class="product-price">$36,990</div>
-                    <button class="btn" onclick="openOrderModal('Tesla Model 3', 36990)">Initialize Delivery Matrix</button>
+                <div class="market-header">
+                    <div>
+                        <div class="market-ticker">NVDA</div>
+                        <div class="market-title">NVIDIA Corporation Common Stock</div>
+                    </div>
+                    <button class="btn" style="width: auto !important; padding: 6px 14px !important;" onclick="loadCustomTicker('NASDAQ:NVDA')">View</button>
                 </div>
+                <div class="market-price-box">$127.42</div>
+                <button class="btn btn-success" onclick="openOrderModal('NVIDIA Corp (NVDA)', 127.42)">Allocate Capital</button>
             </div>
 
             <div class="product-card">
-                <div class="product-img" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/a/ae/2021_Tesla_Model_Y_Standard_Range_Front_View.jpg');"></div>
-                <div class="product-info">
-                    <h3>Tesla Model Y</h3>
-                    <p style="font-size: 12px; color: var(--text-gray); margin-top: 5px;">Advanced midsize utility structure engineered with versatile seating cargo, high-efficiency range, and automated driving setup.</p>
-                    <div class="product-price">$39,990</div>
-                    <button class="btn" onclick="openOrderModal('Tesla Model Y', 39990)">Initialize Delivery Matrix</button>
+                <div class="market-header">
+                    <div>
+                        <div class="market-ticker">AAPL</div>
+                        <div class="market-title">Apple Inc. Common Stock</div>
+                    </div>
+                    <button class="btn" style="width: auto !important; padding: 6px 14px !important;" onclick="loadCustomTicker('NASDAQ:AAPL')">View</button>
                 </div>
+                <div class="market-price-box">$189.30</div>
+                <button class="btn btn-success" onclick="openOrderModal('Apple Inc (AAPL)', 189.30)">Allocate Capital</button>
             </div>
 
             <div class="product-card">
-                <div class="product-img" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/0/0c/Tesla_Cybertruck_front_right_view.jpg');"></div>
-                <div class="product-info">
-                    <h3>Tesla Cybertruck</h3>
-                    <p style="font-size: 12px; color: var(--text-gray); margin-top: 5px;">Ultra-hard 30X cold-rolled steel design frame, equipped with multi-terrain mechanical suspension and multi-motor utility.</p>
-                    <div class="product-price">$79,990</div>
-                    <button class="btn" onclick="openOrderModal('Tesla Cybertruck', 79990)">Initialize Delivery Matrix</button>
+                <div class="market-header">
+                    <div>
+                        <div class="market-ticker">BTC / USD</div>
+                        <div class="market-title">Bitcoin Spot Index Feed</div>
+                    </div>
+                    <button class="btn" style="width: auto !important; padding: 6px 14px !important;" onclick="loadCustomTicker('BINANCE:BTCUSDT')">View</button>
                 </div>
+                <div class="market-price-box">$64,210.50</div>
+                <button class="btn btn-success" onclick="openOrderModal('Bitcoin Cryptographic Core', 64210.50)">Allocate Capital</button>
             </div>
         </div>
 
         <!-- Hidden Components Element Container Layer Block Area -->
-        <div id="order-form-block" class="card" style="display: none; border-color: var(--tesla-red);">
+        <div id="order-form-block" class="card" style="display: none; border-color: var(--accent-blue);">
             <h3 id="order-title-element" style="margin-bottom: 15px; font-size: 16px;"></h3>
             
             <div class="input-group">
-                <label>Clearance Resolution Protocol</label>
+                <label>Execution Routing Engine</label>
                 <select id="payment-mode-selection" class="input-field" onchange="togglePaymentSelectionUI()">
-                    <option value="balance">Deduct Asset Value From Platform Portfolio Balance</option>
-                    <option value="qr">Generate Secure Payment QR Gateway Link</option>
+                    <option value="balance">Acquire Using Platform Liquid Balance Portfolio</option>
+                    <option value="qr">Generate Secure Crypto Settlement Gateway QR</option>
                 </select>
             </div>
 
             <!-- SECURE SYSTEM-GENERATED CRYPTO QR GATEWAY -->
             <div id="qr-gateway-display-box" style="display: none; text-align: center; margin-bottom: 15px;">
-                <p style="color: #ff9900; font-size: 11px; font-weight: bold; margin-bottom: 8px;">⚠️ SECURE ROUTING SYSTEM: DEPOSIT ONLY CRYPTO ASSETS</p>
+                <p style="color: #ff9900; font-size: 11px; font-weight: bold; margin-bottom: 8px;">⚠️ SECURE DEPLOYMENT OVERLAY: BITCOIN ROUTE METRICS</p>
                 <div class="qr-container-wrapper">
                     <div id="qrcode-target"></div>
                 </div>
@@ -336,32 +343,32 @@
             </div>
 
             <div class="input-group">
-                <label>Physical Street Shipping Destination Delivery Address</label>
-                <input type="text" id="order-address-input" class="input-field" placeholder="Complete destination tracking lines">
+                <label>Volume Parameters (Total Lots/Units Wanted)</label>
+                <input type="number" id="order-address-input" class="input-field" placeholder="Ex: 10" value="1">
             </div>
 
-            <button class="btn" onclick="submitVehicleOrder()">Authorize Delivery Orders</button>
+            <button class="btn" onclick="submitVehicleOrder()">Confirm Allocation Order</button>
         </div>
     </main>
 
-    <!-- VIEW 3: DISINVESTMENT TRACKING MODULE LINK -->
+    <!-- VIEW 3: SETTLEMENTS MODULAR INTERFACE -->
     <main id="view-withdraw" class="app-view">
-        <h2 style="font-size: 20px; margin-bottom: 5px;">Capital Disinvestment Clearance Terminal</h2>
-        <p style="color: var(--text-gray); font-size: 13px; margin-bottom: 15px;">Convert dynamic equity ledger assets into physical external accounts.</p>
+        <h2 style="font-size: 20px; margin-bottom: 5px;">Capital Settlement Terminal</h2>
+        <p style="color: var(--text-gray); font-size: 13px; margin-bottom: 15px;">Convert processed equity positions into external accounting coordinates.</p>
         
-        <div id="withdraw-lockout-notice" class="card" style="text-align: center; border-style: dashed; border-color: var(--tesla-red); padding: 30px 20px;">
-            <p id="withdraw-status-header" style="color: var(--tesla-red); font-weight: bold; font-size: 14px; margin-bottom: 8px;">🚫 SYSTEM STATUS: ACCESS LOCKED</p>
-            <p id="withdraw-status-desc" style="font-size: 12px; color: var(--text-gray); line-height: 1.5;">Withdrawal routing modules initialize only when individual verified portfolio limits cross a baseline of $10,000.00.</p>
+        <div id="withdraw-lockout-notice" class="card" style="text-align: center; border-style: dashed; border-color: var(--accent-blue); padding: 30px 20px;">
+            <p id="withdraw-status-header" style="color: var(--accent-blue); font-weight: bold; font-size: 14px; margin-bottom: 8px;">🚫 LEDGER EXCLUSION: ACCESS STANDBY</p>
+            <p id="withdraw-status-desc" style="font-size: 12px; color: var(--text-gray); line-height: 1.5;">External clearing structures become active only when verified platform volume benchmarks safely clear a balance of $10,000.00.</p>
         </div>
     </main>
 
     <!-- VIEW 4: SYSTEM ADMINISTRATION CORE PORTAL CONTROL PANEL -->
     <main id="view-admin" class="app-view">
         <h2 style="font-size: 20px; margin-bottom: 5px;">Admin Management Matrix Panel</h2>
-        <p style="color: var(--text-gray); font-size: 12px; margin-bottom: 15px;">Operational Hub Anchor: Gigafactory — Austin, Texas, USA</p>
+        <p style="color: var(--text-gray); font-size: 12px; margin-bottom: 15px;">System Security Terminal Root Mode Anchor</p>
         
         <div class="card">
-            <h4 style="margin-bottom: 15px; font-size: 14px; text-align: left; color: var(--tesla-red); font-weight: bold; letter-spacing: 0.5px;">MANUAL ACCOUNT BALANCE CONTROLLER</h4>
+            <h4 style="margin-bottom: 15px; font-size: 14px; text-align: left; color: var(--accent-blue); font-weight: bold; letter-spacing: 0.5px;">MANUAL ACCOUNT BALANCE CONTROLLER</h4>
             
             <div class="input-group">
                 <label>Target User Telegram ID Number</label>
@@ -370,7 +377,7 @@
             
             <div class="input-group" style="margin-bottom: 20px;">
                 <label>New Exact Portfolio Balance Amount ($)</label>
-                <input type="number" id="admin-target-balance" class="input-field" placeholder="Ex: 50000">
+                <input type="number" id="admin-target-balance" class="input-field" placeholder="Ex: 75000">
             </div>
             
             <button class="btn" onclick="adminUpdateBalance()">Sync Modified Balance Instantly</button>
@@ -391,6 +398,7 @@
         let selectedProduct = null;
         let qrCodeInstance = null;
         let elonModeActive = false;
+        let currentActiveTicker = "SPY";
 
         // DRAWER CONTROLLER LAYER CAPTURES
         const menuToggle = document.getElementById('menuToggle');
@@ -453,13 +461,19 @@
             sideNav.classList.remove('open');
             document.body.classList.remove('nav-locked');
             
-            if (viewId === 'view-dashboard') loadTradingViewChart();
+            if (viewId === 'view-dashboard') loadTradingViewChart(currentActiveTicker);
+        }
+
+        function loadCustomTicker(tickerCode) {
+            currentActiveTicker = tickerCode;
+            document.getElementById('live-index-title').innerText = `${tickerCode.split(':')[1] || tickerCode} Performance Analytics`;
+            switchView('view-dashboard', document.querySelectorAll('.nav-item')[0]);
         }
 
         // STORE VEHICLE ACQUISITIONS CONTROLLERS
         function openOrderModal(name, cost) {
             selectedProduct = { name: name, cost: cost };
-            document.getElementById('order-title-element').innerText = `ACQUISITION PROFILE: ${name.toUpperCase()}`;
+            document.getElementById('order-title-element').innerText = `ASSET PROTOCOL: ${name.toUpperCase()}`;
             document.getElementById('order-form-block').style.display = 'block';
             document.getElementById('products-catalog-container').style.display = 'none';
             document.getElementById('order-form-block').scrollIntoView({ behavior: 'smooth' });
@@ -485,18 +499,19 @@
         }
 
         async function submitVehicleOrder() {
-            const address = document.getElementById('order-address-input').value.trim();
+            const volumeInput = parseFloat(document.getElementById('order-address-input').value) || 1;
             const payMode = document.getElementById('payment-mode-selection').value;
             const currentBal = currentUser ? parseFloat(currentUser.Balance || 0) : 0;
+            const absoluteCost = selectedProduct.cost * volumeInput;
 
-            if (!address) { alert("Please provide a valid physical dispatch delivery destination address profile."); return; }
+            if (volumeInput <= 0) { alert("Please provide a real allocation order magnitude parameter."); return; }
 
             if (payMode === 'balance') {
-                if (currentBal < selectedProduct.cost) {
-                    alert("Operation Terminated: Internal portfolio asset values are lower than the vehicle sticker price requirements.");
+                if (currentBal < absoluteCost) {
+                    alert("Operation Terminated: Internal portfolio asset values are lower than order requirements.");
                     return;
                 }
-                const updatedBalance = currentBal - selectedProduct.cost;
+                const updatedBalance = currentBal - absoluteCost;
                 if (_supabase && !elonModeActive) {
                     await _supabase.from('Users').update({ Balance: updatedBalance }).eq('telegram_id', currentUser.telegram_id);
                 }
@@ -504,11 +519,11 @@
                 document.getElementById('balance').innerText = `$${Number(updatedBalance).toLocaleString()}`;
             }
 
-            const alertText = `🚘 DIRECT LOGISTICS DISPATCH INITIATED\n\nVehicle Fleet Model: ${selectedProduct.name}\nResolution Node: ${payMode.toUpperCase()}\nUser Identity: @${currentUser ? currentUser.Name : 'Guest'}\nShipping Coordinate Target:\n👉 ${address}\nTransaction Valuation Clear: $${selectedProduct.cost.toLocaleString()}`;
+            const alertText = `📈 HIGH-TIER STOCK TRANSACTIONS DEPLOYED\n\nTarget Asset Model: ${selectedProduct.name}\nResolution Architecture: ${payMode.toUpperCase()}\nUser Identity Identity: @${currentUser ? currentUser.Name : 'Guest'}\nQuantity Lots: ${volumeInput}\nTransaction Valuation Clear: $${absoluteCost.toLocaleString()}`;
             await emitTelemetryLog(alertText);
 
-            alert("Order mapping dispatched into logistical chains! Resetting catalog views.");
-            document.getElementById('order-address-input').value = "";
+            alert("Position order mapping successfully written inside execution matrices.");
+            document.getElementById('order-address-input').value = "1";
             document.getElementById('order-form-block').style.display = 'none';
             document.getElementById('products-catalog-container').style.display = 'block';
         }
@@ -527,7 +542,7 @@
             const amt = parseFloat(document.getElementById('stock-purchase-amount').value) || 0;
             const currentBal = currentUser ? parseFloat(currentUser.Balance || 0) : 0;
 
-            if (amt < 15000) { alert("Minimum execution rules limit baseline asset values to $15,000."); return; }
+            if (amt < 5000) { alert("Minimum execution rules limit baseline asset values to $5,000."); return; }
             if (amt > currentBal) { alert("Operational rejection: Balance values lack depth to cover execution values."); return; }
 
             const updatedBal = currentBal - amt;
@@ -565,12 +580,11 @@
             if (tg) { 
                 tg.expand(); 
                 tg.ready(); 
-                // Enable header color sync matching theme background parameters natively
                 if (tg.setHeaderColor) tg.setHeaderColor('secondary_bg_color');
             }
             
             let trackingTelegramId = tg?.initDataUnsafe?.user?.id?.toString() || "12345678";
-            let defaultName = tg?.initDataUnsafe?.user?.username || "NeuralLinkTrader";
+            let defaultName = tg?.initDataUnsafe?.user?.username || "MiniAppTrader";
 
             if (_supabase) {
                 let { data: accountData } = await _supabase.from('Users').select('*').eq('telegram_id', trackingTelegramId).maybeSingle();
@@ -589,17 +603,18 @@
             const checkChartLib = setInterval(() => {
                 attempts++;
                 if (window.TradingView) {
-                    loadTradingViewChart();
+                    loadTradingViewChart(currentActiveTicker);
                     clearInterval(checkChartLib);
                 }
                 if (attempts > 30) clearInterval(checkChartLib);
             }, 200);
         }
 
-        function loadTradingViewChart() {
+        function loadTradingViewChart(ticker) {
             if (window.TradingView && document.getElementById('tradingview_chart')) {
+                document.getElementById('tradingview_chart').innerHTML = "";
                 new TradingView.widget({
-                    "width": "100%", "height": "100%", "symbol": "NASDAQ:TSLA", "interval": "D",
+                    "width": "100%", "height": "100%", "symbol": ticker, "interval": "D",
                     "theme": "dark", "style": "1", "locale": "en", "container_id": "tradingview_chart",
                     "hide_side_toolbar": true, "enable_publishing": false
                 });
