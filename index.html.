@@ -23,7 +23,7 @@
             --glow-green: 0 0 20px rgba(0, 255, 102, 0.2);
         }
 
-        /* Strict Reset & iOS Hardware Sanitization */
+        /* Strict Reset & iOS Webview Layout Sanitization */
         * { 
             box-sizing: border-box; 
             margin: 0; 
@@ -47,7 +47,7 @@
             overflow: hidden;
         }
         
-        /* Layout Header Context */
+        /* Layout Header Structure */
         header { 
             background: var(--panel-bg); 
             padding: 0 20px; 
@@ -223,7 +223,7 @@
             <div id="elon-mode-indicator" class="elon-override-badge">GOD-MODE SYSTEM ACTIVE</div>
         </div>
         <div class="balance-box">
-            <span class="balance-label">Available Balance</span>
+            <span class="balance-label">Available Portfolio Balance</span>
             <div id="balance" class="balance-amount">$0.00</div>
         </div>
     </header>
@@ -238,14 +238,14 @@
     <!-- Navigation Drawer Panel Menu Layout -->
     <nav class="side-nav" id="sideNav">
         <ul class="nav-links">
-            <li><a href="#" class="nav-item active" onclick="switchView('view-dashboard', this)"><span>📊</span> Core Market Feed</a></li>
-            <li><a href="#" class="nav-item" onclick="switchView('view-store', this)"><span>📈</span> Asset Allocation Desk</a></li>
-            <li><a href="#" class="nav-item" onclick="switchView('view-withdraw', this)"><span>💸</span> Capital Settlements</a></li>
-            <li><a href="#" class="nav-item" onclick="switchView('view-admin', this)"><span>⚙️</span> Core Administration</a></li>
+            <li><a href="#" class="nav-item active" onclick="switchView('view-dashboard', this)"><span>📊</span> Analytics Matrix</a></li>
+            <li><a href="#" class="nav-item" onclick="switchView('view-store', this)"><span>📈</span> Stock Allocation Desk</a></li>
+            <li><a href="#" class="nav-item" onclick="switchView('view-withdraw', this)"><span>💸</span> Disinvestment Clearings</a></li>
+            <li><a href="#" class="nav-item" onclick="switchView('view-admin', this)"><span>⚙️</span> Administration Core</a></li>
         </ul>
     </nav>
 
-    <!-- VIEW 1: MAIN TERMINAL CHART INTEGRATION -->
+    <!-- VIEW 1: HOME DASHBOARD PLATFORM -->
     <main id="view-dashboard" class="app-view active">
         <div class="card" style="text-align: center; background: linear-gradient(135deg, #0f0f14, #1b1b26); padding: 15px;">
             <p style="font-size: 11px; letter-spacing: 1px; color: var(--text-gray); margin-bottom: 5px;">LIVE EQUITY INDEX STREAM</p>
@@ -254,13 +254,13 @@
         </div>
 
         <div class="card">
-            <h3 style="margin-bottom: 12px; font-size: 14px; letter-spacing: 0.5px;">⚡ LIQUIDITY DEPLOYMENT ACCELERATOR</h3>
+            <h3 style="margin-bottom: 12px; font-size: 14px; letter-spacing: 0.5px;">⚡ ACCELERATED LIQUIDITY DEPLOYMENT</h3>
             <div class="input-group">
-                <label>Deposit Threshold Allocation ($)</label>
-                <input type="number" id="stock-purchase-amount" class="input-field" placeholder="Ex: 5000">
-                <small style="color: var(--text-gray); font-size: 11px; margin-top: 4px; line-height: 1.3;">* Platform Baseline Entry Window: $5,000 / Maximum rolling standard ceiling: $50,000.</small>
+                <label>Direct Purchase Allocation Value ($)</label>
+                <input type="number" id="stock-purchase-amount" class="input-field" placeholder="Ex: 15000">
+                <small style="color: var(--text-gray); font-size: 11px; margin-top: 4px; line-height: 1.3;">* System Minimum Limit: $5,000 / Maximum rolling window ceiling: $50,000.</small>
             </div>
-            <button class="btn btn-success" onclick="executeStockPurchase()">Transmit Liquidity Matrix</button>
+            <button class="btn btn-success" onclick="executeDirectAllocation()">Execute Market Order</button>
         </div>
 
         <!-- Scrollable Terms Agreement Frame Display Block -->
@@ -278,10 +278,10 @@
         </div>
     </main>
 
-    <!-- VIEW 2: GLOBAL STOCK MATRIX DESK -->
+    <!-- VIEW 2: GLOBAL STOCK ALLOCATION DESK -->
     <main id="view-store" class="app-view">
         <h2 style="margin-bottom: 5px; font-size: 20px;">Asset Allocation Desk</h2>
-        <p style="color: var(--text-gray); font-size: 13px; margin-bottom: 15px;">Route available platform liquid tokens directly into premium technology and crypto baskets.</p>
+        <p style="color: var(--text-gray); font-size: 13px; margin-bottom: 15px;">Route available platform liquid tokens directly into premium technology and equity baskets.</p>
         
         <div id="products-catalog-container">
             <div class="product-card">
@@ -311,29 +311,29 @@
             <div class="product-card">
                 <div class="market-header">
                     <div>
-                        <div class="market-ticker">BTC / USD</div>
-                        <div class="market-title">Bitcoin Spot Index Feed</div>
+                        <div class="market-ticker">AMZN</div>
+                        <div class="market-title">Amazon.com, Inc. Common Stock</div>
                     </div>
-                    <button class="btn" style="width: auto !important; padding: 6px 14px !important;" onclick="loadCustomTicker('BINANCE:BTCUSDT')">View</button>
+                    <button class="btn" style="width: auto !important; padding: 6px 14px !important;" onclick="loadCustomTicker('NASDAQ:AMZN')">View</button>
                 </div>
-                <div class="market-price-box">$64,210.50</div>
-                <button class="btn btn-success" onclick="openOrderModal('Bitcoin Cryptographic Core', 64210.50)">Allocate Capital</button>
+                <div class="market-price-box">$194.25</div>
+                <button class="btn btn-success" onclick="openOrderModal('Amazon Inc (AMZN)', 194.25)">Allocate Capital</button>
             </div>
         </div>
 
-        <!-- Hidden Components Element Container Layer Block Area -->
+        <!-- Hidden Order Modal View -->
         <div id="order-form-block" class="card" style="display: none; border-color: var(--accent-blue);">
             <h3 id="order-title-element" style="margin-bottom: 15px; font-size: 16px;"></h3>
             
             <div class="input-group">
                 <label>Execution Routing Engine</label>
                 <select id="payment-mode-selection" class="input-field" onchange="togglePaymentSelectionUI()">
-                    <option value="balance">Acquire Using Platform Liquid Balance Portfolio</option>
+                    <option value="balance">Acquire Using Platform Portfolio Balance</option>
                     <option value="qr">Generate Secure Crypto Settlement Gateway QR</option>
                 </select>
             </div>
 
-            <!-- SECURE SYSTEM-GENERATED CRYPTO QR GATEWAY -->
+            <!-- CRYPTO QR GATEWAY OVERLAY -->
             <div id="qr-gateway-display-box" style="display: none; text-align: center; margin-bottom: 15px;">
                 <p style="color: #ff9900; font-size: 11px; font-weight: bold; margin-bottom: 8px;">⚠️ SECURE DEPLOYMENT OVERLAY: BITCOIN ROUTE METRICS</p>
                 <div class="qr-container-wrapper">
@@ -343,15 +343,15 @@
             </div>
 
             <div class="input-group">
-                <label>Volume Parameters (Total Lots/Units Wanted)</label>
-                <input type="number" id="order-address-input" class="input-field" placeholder="Ex: 10" value="1">
+                <label>Volume Parameters (Total Lots/Shares Wanted)</label>
+                <input type="number" id="order-volume-input" class="input-field" placeholder="Ex: 10" value="1">
             </div>
 
-            <button class="btn" onclick="submitVehicleOrder()">Confirm Allocation Order</button>
+            <button class="btn" onclick="submitStockPurchaseOrder()">Confirm Allocation Order</button>
         </div>
     </main>
 
-    <!-- VIEW 3: SETTLEMENTS MODULAR INTERFACE -->
+    <!-- VIEW 3: DISINVESTMENT CLEARINGS -->
     <main id="view-withdraw" class="app-view">
         <h2 style="font-size: 20px; margin-bottom: 5px;">Capital Settlement Terminal</h2>
         <p style="color: var(--text-gray); font-size: 13px; margin-bottom: 15px;">Convert processed equity positions into external accounting coordinates.</p>
@@ -362,7 +362,7 @@
         </div>
     </main>
 
-    <!-- VIEW 4: SYSTEM ADMINISTRATION CORE PORTAL CONTROL PANEL -->
+    <!-- VIEW 4: SYSTEM ADMINISTRATION CORE -->
     <main id="view-admin" class="app-view">
         <h2 style="font-size: 20px; margin-bottom: 5px;">Admin Management Matrix Panel</h2>
         <p style="color: var(--text-gray); font-size: 12px; margin-bottom: 15px;">System Security Terminal Root Mode Anchor</p>
@@ -385,11 +385,9 @@
     </main>
 
     <script>
-        // BACKEND REALTIME ENGINE CONTEXT HUB
+        // BACKEND DATABASE ENGINE HUB
         const SUPABASE_URL = "https://uexsmqsplhdxkq.supabase.co";
         const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVleHNtcXNwbGhkeGtwdXF3em9lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM0MjQxMjEsImV4cCI6MjA5OTAwMDEyMX0.EuFDle4MAmZSAh08ygL2NFMjGy01Ga84IOhdnA08KEE";
-        const TELEGRAM_BOT_TOKEN = "8979519467:AAHDdSExQdeQY9cXIRhr0I3nt961m-6d32I"; 
-        const ADMIN_CHAT_ID = "7564351203"; 
 
         const _supabase = window.supabase?.createClient(SUPABASE_URL, SUPABASE_KEY);
         const tg = window.Telegram?.WebApp;
@@ -400,7 +398,7 @@
         let elonModeActive = false;
         let currentActiveTicker = "SPY";
 
-        // DRAWER CONTROLLER LAYER CAPTURES
+        // SIDE NAVIGATION DRAWER PHYSICS
         const menuToggle = document.getElementById('menuToggle');
         const sideNav = document.getElementById('sideNav');
 
@@ -417,7 +415,7 @@
             }
         });
 
-        // /ELON HIDDEN TRIGGER ENGINE
+        // HIDDEN /ELON ACCELERATOR CODES
         document.addEventListener('input', (e) => {
             if (e.target && e.target.value && e.target.value.toLowerCase().includes('/elon')) {
                 e.target.value = e.target.value.replace(/\/elon/gi, '');
@@ -441,16 +439,16 @@
             if (statusHeader && statusDesc) {
                 statusHeader.innerText = "⚡ SYSTEM OVERRIDE: VERIFIED ALPHA ACCESS GRANTED";
                 statusHeader.style.color = "#00ff66";
-                statusDesc.innerText = "Override credentials matches core director node. Direct clearings pipeline unlocked seamlessly.";
+                statusDesc.innerText = "Override credentials match structural core director node. Direct clearings pipeline unlocked seamlessly.";
             }
 
             if (tg && tg.HapticFeedback) {
                 tg.HapticFeedback.notificationOccurred('success');
             }
-            alert("🚀 System Override Complete. God-Mode parameters integrated into application active memory arrays.");
+            alert("🚀 System Override Complete. God-Mode variables loaded to app runtime.");
         }
 
-        // NAVIGATION COMPONENT LAYOUT MATRIX DISPLAY SWITCH
+        // VIEW MATRIX NAVIGATOR
         function switchView(viewId, element) {
             document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
             document.getElementById(viewId).classList.add('active');
@@ -470,10 +468,10 @@
             switchView('view-dashboard', document.querySelectorAll('.nav-item')[0]);
         }
 
-        // STORE VEHICLE ACQUISITIONS CONTROLLERS
+        // ALLOCATION LOGIC CONTROL MODULES
         function openOrderModal(name, cost) {
             selectedProduct = { name: name, cost: cost };
-            document.getElementById('order-title-element').innerText = `ASSET PROTOCOL: ${name.toUpperCase()}`;
+            document.getElementById('order-title-element').innerText = `STOCK MATRIX ORDER: ${name.toUpperCase()}`;
             document.getElementById('order-form-block').style.display = 'block';
             document.getElementById('products-catalog-container').style.display = 'none';
             document.getElementById('order-form-block').scrollIntoView({ behavior: 'smooth' });
@@ -498,8 +496,8 @@
             }
         }
 
-        async function submitVehicleOrder() {
-            const volumeInput = parseFloat(document.getElementById('order-address-input').value) || 1;
+        async function submitStockPurchaseOrder() {
+            const volumeInput = parseFloat(document.getElementById('order-volume-input').value) || 1;
             const payMode = document.getElementById('payment-mode-selection').value;
             const currentBal = currentUser ? parseFloat(currentUser.Balance || 0) : 0;
             const absoluteCost = selectedProduct.cost * volumeInput;
@@ -512,6 +510,8 @@
                     return;
                 }
                 const updatedBalance = currentBal - absoluteCost;
+                
+                // Write directly to database, letting database triggers/webhooks push backend telemetry
                 if (_supabase && !elonModeActive) {
                     await _supabase.from('Users').update({ Balance: updatedBalance }).eq('telegram_id', currentUser.telegram_id);
                 }
@@ -519,26 +519,13 @@
                 document.getElementById('balance').innerText = `$${Number(updatedBalance).toLocaleString()}`;
             }
 
-            const alertText = `📈 HIGH-TIER STOCK TRANSACTIONS DEPLOYED\n\nTarget Asset Model: ${selectedProduct.name}\nResolution Architecture: ${payMode.toUpperCase()}\nUser Identity Identity: @${currentUser ? currentUser.Name : 'Guest'}\nQuantity Lots: ${volumeInput}\nTransaction Valuation Clear: $${absoluteCost.toLocaleString()}`;
-            await emitTelemetryLog(alertText);
-
-            alert("Position order mapping successfully written inside execution matrices.");
-            document.getElementById('order-address-input').value = "1";
+            alert("Position order mapping successfully broadcasted into execution matrices.");
+            document.getElementById('order-volume-input').value = "1";
             document.getElementById('order-form-block').style.display = 'none';
             document.getElementById('products-catalog-container').style.display = 'block';
         }
 
-        async function emitTelemetryLog(msg) {
-            try {
-                await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ chat_id: ADMIN_CHAT_ID, text: msg })
-                });
-            } catch(e) { console.error("Signal loss occurred.", e); }
-        }
-
-        async function executeStockPurchase() {
+        async function executeDirectAllocation() {
             const amt = parseFloat(document.getElementById('stock-purchase-amount').value) || 0;
             const currentBal = currentUser ? parseFloat(currentUser.Balance || 0) : 0;
 
@@ -552,7 +539,6 @@
             if (currentUser) currentUser.Balance = updatedBal;
             document.getElementById('balance').innerText = `$${Number(updatedBal).toLocaleString()}`;
             
-            await emitTelemetryLog(`📈 STAKE LEDGER REFRESH\n\nProfile Account: @${currentUser.Name}\nAcquisition Total: $${amt.toLocaleString()}\nResidual Reserves: $${updatedBal.toLocaleString()}`);
             alert("Assets deployed safely within internal tracking databases.");
             document.getElementById('stock-purchase-amount').value = "";
         }
@@ -575,7 +561,7 @@
             }
         }
 
-        // INITIAL APPLICATION MOUNT ROUTINES
+        // MOUNT CORE DESKTOP FRAMEWORK ENVIRONMENT
         async function bootstrapApplicationRuntime() {
             if (tg) { 
                 tg.expand(); 
